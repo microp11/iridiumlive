@@ -1,8 +1,10 @@
 # IridiumLive
 
-*Welcome to iridiumLive!*
+*Welcome to IridiumLive!*
 
 IridiumLive is a [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.1) server application which allows for the real-time vizualization of the iridium satellites as they pass above your location. You install the application in your local network, and use the browser to interact with it.
+
+#### Setup
 
 At this time the following ports have been hard coded:
 ```
@@ -32,3 +34,14 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 ```
 6. Run IridiumLive. 
 7. Open any browser at http://**server_address**:7777 and enjoy!
+
+#### Links
+
+* [gr-iridium](https://github.com/muccc/gr-iridium)
+* [iridium-toolkit](https://github.com/muccc/iridium-toolkit)
+* [blazor workshop](https://github.com/dotnet-presentations/blazor-workshop)
+* [spa with blazor server and ef](https://www.c-sharpcorner.com/article/create-a-single-page-app-with-blazor-server-and-entity-framework-core-3-0/)
+
+#### Disclaimer
+
+This is my first .NET Core web app. Blazor on top of it. Be gentle!

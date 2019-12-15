@@ -3,6 +3,9 @@ import select
 import time
 import socket
 
+# In my case 192.168.2.10 is the IP of the destination for the UDP datagrams below. It is the machine where IridiumLive application runs.
+# Replace as needed for your network settings.
+
 ap = ("192.168.2.10", 15007)
 sk = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 def sendOverUdp(line):
