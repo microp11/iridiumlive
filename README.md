@@ -35,7 +35,7 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 6. Run IridiumLive. 
 7. Open any browser at http://**server_address**:7777 and enjoy!
 
-#### Links
+#### Credits
 
 * [gr-iridium](https://github.com/muccc/gr-iridium)
 * [iridium-toolkit](https://github.com/muccc/iridium-toolkit)
