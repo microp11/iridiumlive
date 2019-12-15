@@ -293,3 +293,5 @@ __pycache__/
 /ScytaleC/UIHelper.cs
 /MDemodulator/Filer.cs
 /ScytaleC/Utils/Filer.cs
+/IridiumLive/IridiumLive.db-shm
+*.db-wal

@@ -19,7 +19,7 @@ The data will be provided by your personal install of gr-iridium and iridium-too
 ...
 import socket
 
-ap = ("localhost", 15007)
+ap = ("192.168.2.10", 15007)
 sk = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 def sendOverUdp(line):
 ...
