@@ -29,8 +29,19 @@ def sendOverUdp(line):
 user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/hackrf.conf | ~/iridium-toolkit/iridium-parser.py -p /dev/stdin /dev/stdout | grep "sat:" | python udp-for-il.py
 ```
 5. Only continue to next step if you see udp lines being transmitted:
-```
-
+```python
+191
+1576397118 | i:  68/s | i_avg:  19/s | q:    0 | q_max:    7 | o: 106/s | ok:  63% | ok:  43/s | ok_avg:  51% | ok:      32064 | ok_avg:   9/s | d: 0
+1576397119 | i:  67/s | i_avg:  19/s | q:    0 | q_max:    6 | o: 103/s | ok:  64% | ok:  43/s | ok_avg:  51% | ok:      32108 | ok_avg:   9/s | d: 0
+1576397120 | i:  58/s | i_avg:  19/s | q:    0 | q_max:    5 | o:  91/s | ok:  57% | ok:  33/s | ok_avg:  51% | ok:      32142 | ok_avg:   9/s | d: 0
+1576397121 | i:  69/s | i_avg:  19/s | q:    0 | q_max:    4 | o: 115/s | ok:  61% | ok:  42/s | ok_avg:  51% | ok:      32185 | ok_avg:   9/s | d: 0
+169
+173
+191
+169 <- the length of one blob sent over UDP
+173
+191
+169
 ```
 6. Run IridiumLive. 
 7. Open any browser at http://**server_address**:7777 and enjoy!
