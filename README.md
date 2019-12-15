@@ -24,7 +24,7 @@ sk = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 def sendOverUdp(line):
 ...
 ```
-4. Instantiate the iridium receiver and pipe through decoder, filter and udp transmitter using the following command line:
+4. Instantiate the iridium receiver and pipe through decoder, filter and udp transmitter adapting the following command line:
 ```
 user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/hackrf.conf | ~/iridium-toolkit/iridium-parser.py -p /dev/stdin /dev/stdout | grep "sat:" | python udp-for-il.py
 ```
