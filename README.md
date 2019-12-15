@@ -2,7 +2,11 @@
 
 *Welcome to IridiumLive!*
 
-IridiumLive is a [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.1) server application which allows for the real-time vizualization of the iridium satellites as they pass above your location. It is another tool which allows for the visualization of live data coming from gr-iridium. You install the application in your local network, and use the browser to interact with it.
+IridiumLive is a [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.1) server application which allows for the real-time vizualization of the iridium satellites as they pass above your location. 
+
+It is another tool which allows for the visualization of live data coming from gr-iridium. Will not work without it. 
+
+You install the application in your local network, and use the browser to interact with it.
 
 #### Setup
 
