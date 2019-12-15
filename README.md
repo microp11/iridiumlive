@@ -12,7 +12,7 @@ At this time the following ports have been hard coded:
 15007: udp port for receiving data from gr-iridium and iridium-toolkit.
 ```
 The data will be provided by your personal install of gr-iridium and iridium-toolkit (see [gr-iridium](https://github.com/muccc/gr-iridium) and [iridium-toolkit](https://github.com/muccc/iridium-toolkit)).
-1. On the same machine as gr-iridium download and extract the python udp transmitter [udp-for-il.py](). Please install in the same folder as gr-iridium.
+1. On the same machine as gr-iridium download and extract the python udp transmitter [udp-for-il.py](udp-for-il.py). Please install in the same folder as gr-iridium.
 2. Depending of your intended OS target, download and extract the appropriate IridiumLive archive. Install in a folder of its own. You can install either on the same machine or to a different one.
 3. In the udp-for-il.py script, the **server_address** **(192.168.2.10)** denotes the machine where IridiumLive is installed. Modify it accordingly. This address is also where you will open your browser to later on:
 ```python
@@ -45,3 +45,4 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 #### Disclaimer
 
 This is my first .NET Core web app. Blazor on top of it. Be gentle!
+
