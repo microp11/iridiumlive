@@ -1,0 +1,75 @@
+﻿@page "/statistics"
+
+@inject HttpClient Http
+@inject AppSettingsService appSettingsService
+
+@implements IDisposable
+
+<h2>Statistics</h2>
+<span class="size-label">Last page update: @latestUpdate</span>
+
+@if (stats == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Sat</th>
+                <th>Ring alerts</th>
+                <th>Broadcasts</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stat in stats)
+            {
+                <tr>
+                    <td>@stat.SatNo</td>
+                    <td>@stat.Iras</td>
+                    <td>@stat.Ibcs</td>
+                    @*<td>
+                        <a href='/editsat/@sat.Id'>Edit</a>
+                    </td>*@
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<Stat> stats;
+    private string baseUrl;
+    private string latestUpdate;
+    private CancellationTokenSource pollingCancellationToken;
+    //private int satCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pollingCancellationToken?.Cancel();
+        await PollForUpdates();
+    }
+
+    private async Task PollForUpdates()
+    {
+        pollingCancellationToken = new CancellationTokenSource();
+        while (!pollingCancellationToken.IsCancellationRequested)
+        {
+            baseUrl = appSettingsService.GetBaseUrl();
+            stats = await Http.GetJsonAsync<Stat[]>(baseUrl + "/api/stats");
+            //satCount = sats.Count;
+            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+            StateHasChanged();
+            
+            await Task.Delay(1000, pollingCancellationToken.Token);
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        pollingCancellationToken?.Cancel();
+        pollingCancellationToken?.Dispose();
+    }
+}   

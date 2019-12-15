@@ -1,0 +1,54 @@
+﻿@page "/editsat/{id}"
+
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject AppSettingsService AppSettingsService
+
+<h2>Edit sat @sat.SatNo</h2>
+<hr />
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@sat.Name" />
+            </div>
+            <div class="form-group">
+                <label for="Notes" class="control-label">Notes</label>
+                <input for="Notes" class="form-control" @bind="@sat.Notes" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="button" class="btn btn-primary" @onclick="@UpdateSat" value="Update" />
+            <input type="button" class="btn" @onclick="@Cancel" value="Cancel" />
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+    string baseUrl;
+
+    Sat sat = new Sat();
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        sat = await Http.GetJsonAsync<Sat>(baseUrl + "/api/sats/" + id);
+    }
+
+    protected async Task UpdateSat()
+    {
+        await Http.PutJsonAsync(baseUrl + "/api/sats/" + id, sat);
+        NavigationManager.NavigateTo("listsats");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("listsats");
+    }
+}   

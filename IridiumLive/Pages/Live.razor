@@ -1,0 +1,128 @@
+﻿@*
+    // There is a difference between Iridium time and UTC, not yet implemented.
+    //*@ 
+
+@using System.Diagnostics
+
+@page "/live"
+@inject HttpClient Http
+@inject AppSettingsService AppSettingsService
+@inject IJSRuntime JSRuntime
+
+@implements IDisposable
+
+<h2>Live view for Iridium ring alert bursts</h2>
+<span class="size-label">Last page update: @latestUpdate</span>
+
+<div class="track-order-map">
+    <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
+</div>
+@*
+    Add some buttons under the map for actions (set interval)
+    <button class="btn btn-primary" @onclick="doit">
+        Draw circle
+    </button>*@
+
+@if (liveIras == null)
+{
+    <p>Awaiting for data...</p>
+}
+else
+{
+    <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Sat</th>
+                <th>Time</th>
+                <th>Quality</th>
+                <th>Beam</th>
+                <th>Coordinates</th>
+                <th>Altitude</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var liveIra in liveIras)
+            {
+                string altitude = (liveIra.Alt > 700) ? string.Format("{0} km", liveIra.Alt) : string.Format("{0} m", liveIra.Alt);
+                <tr>
+                    <td>@liveIra.Name</td>
+                    <td>@liveIra.Time</td>
+                    <td>@liveIra.Quality %</td>
+                    <td>@liveIra.Beam</td>
+                    <td>@liveIra.Lat N @liveIra.Lon E</td>
+                    <td>@altitude</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string latestUpdate;
+    private Marker location = new Marker();
+    private List<Marker> markers = new List<Marker>();
+    private ICollection<LiveIra> liveIras;
+    private string baseUrl;
+    private long lastUtcTicks;
+    private CancellationTokenSource pollingCancellationToken;
+    private Map liveMap;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
+        SetLocation(location);
+        baseUrl = AppSettingsService.GetBaseUrl();
+
+        pollingCancellationToken?.Cancel();
+        await PollForUpdates();
+    }
+
+    private async Task PollForUpdates()
+    {
+        pollingCancellationToken = new CancellationTokenSource();
+        while (!pollingCancellationToken.IsCancellationRequested)
+        {
+            //Debug.WriteLine("call made   : {0}", lastUtcTicks);
+            liveIras = await Http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
+            var liveira = liveIras.LastOrDefault();
+            if (liveira != null)
+            {
+                //at least one marker cand be extracted
+                List<Marker> coloredMarkers = new List<Marker>();
+                foreach (LiveIra record in liveIras)
+                {
+                    Marker m = new Marker();
+                    m.Lat = record.Lat;
+                    m.Lon = record.Lon;
+                    m.Color = (record.Alt > 100) ? "red" : "blue";
+                    coloredMarkers.Add(m);
+                }
+
+                lastUtcTicks = liveira.UtcTicks;
+                //Debug.WriteLine("time changed: {0}", lastUtcTicks);
+                await liveMap.RenderMarkers(coloredMarkers);
+            }
+            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+            if (liveIras.Count > 0)
+            {
+                StateHasChanged();
+            }
+
+            await Task.Delay(1000, pollingCancellationToken.Token);
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        pollingCancellationToken?.Cancel();
+        pollingCancellationToken?.Dispose();
+    }
+
+    private void SetLocation(Marker location)
+    {
+        location.Lat = 46.2382;
+        location.Lon = -63.1311;
+        location.Color = "green";
+    }
+}   

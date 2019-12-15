@@ -1,0 +1,26 @@
+﻿@using System.Reflection;
+
+@page "/"
+
+<h2>Iridium Live</h2>
+<p class="iridium-live-version">@getVersion()</p>
+
+<hr />
+<p>This is pre-release software. Issues and crashes are to be expected.</p>
+<p>Please log issues or comments at: <a href="https://github.com/microp11/iridiumlive/issues">microp11/iridiumlive/issues</a></p>
+
+@code {
+    private string version;
+
+    string getVersion()
+    {
+        Assembly currentAssembly = Assembly.GetEntryAssembly();
+        if (currentAssembly == null)
+        {
+            currentAssembly = Assembly.GetCallingAssembly();
+        }
+        System.Version versionNumber = currentAssembly.GetName().Version;
+        return string.Format("Version {0}.{1}-prerelease-{2}", versionNumber.Major, versionNumber.Minor, versionNumber.Revision);
+    }
+}
+

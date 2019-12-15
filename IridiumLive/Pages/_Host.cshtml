@@ -1,0 +1,87 @@
+﻿@page "/"
+@namespace IridiumLive.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iridium Live</title>
+    <base href="~/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="_content/ComponentsLibrary/leaflet/leaflet.css" rel="stylesheet" />
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="_content/ComponentsLibrary/deliveryMap.js"></script>
+    <script src="_content/ComponentsLibrary/leaflet/leaflet.js"></script>
+
+    <script>
+        // Wait until a 'reload' button appears
+        new MutationObserver((mutations, observer) => {
+            if (document.querySelector(".reload[style='display: block'")) {
+                // Now every 10 seconds, see if the server appears to be back, and if so, reload
+                async function attemptReload() {
+                    await fetch(''); // Check the server really is back
+                    location.reload();
+                }
+                observer.disconnect();
+                attemptReload();
+                setInterval(attemptReload, 10000);
+            }
+        }).observe(document.body, { childList: true, subtree: true });
+    </script>
+
+    @*<script>
+            window.AddResizeHandler = (element) => {
+                window.addEventListener("resize", function () {
+                    resizeElementHeight(element);
+                });
+            }
+
+            window.CallResizeHandler = (element) => {
+                resizeElementHeight(element);
+            }
+
+            window.onhashchange = function () {
+                window.removeEventListener("resize");
+            }
+
+            function resizeElementHeight(element) {
+                if (element != null) {
+                    var height = 0;
+                    var body = window.document.body;
+                    if (window.innerHeight) {
+                        height = window.innerHeight;
+                    } else if (body.parentElement.clientHeight) {
+                        height = body.parentElement.clientHeight;
+                    } else if (body && body.clientHeight) {
+                        height = body.clientHeight;
+                    }
+                    var element2 = document.getElementById(element);
+                    element2.style.height = ((height - element2.offsetTop) + "px");
+                }
+            }
+        </script>*@
+</body>
+</html>
