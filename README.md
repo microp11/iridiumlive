@@ -28,11 +28,12 @@ sk = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 def sendOverUdp(line):
 ...
 ```
-4. Instantiate the iridium receiver and pipe through decoder, filter and udp transmitter adapting the following command line:
+4. Change the center frequency of the gr-iridium decoder to include the Ring Alert band as described at min 9 in the  Stefan “Sec” Zehl, schneider during their presentation at [The Eleventh HOPE (2016): Iridium Satellite Hacking](https://www.youtube.com/watch?time_continue=562&v=JhJT7Cvh6NE&feature=emb_logo).
+5. Instantiate the iridium receiver and pipe through decoder, filter and udp transmitter adapting the following command line:
 ```
 user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/hackrf.conf | ~/iridium-toolkit/iridium-parser.py -p /dev/stdin /dev/stdout | grep "sat:" | python udp-for-il.py
 ```
-5. Only continue to next step if you see udp lines being transmitted:
+6. Only continue to next step if you see udp lines being transmitted:
 ```python
 191
 1576397118 | i:  68/s | i_avg:  19/s | q:    0 | q_max:    7 | o: 106/s | ok:  63% | ok:  43/s | ok_avg:  51% | ok:      32064 | ok_avg:   9/s | d: 0
@@ -47,8 +48,8 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 191
 169
 ```
-6. Run IridiumLive. 
-7. Open any browser at http://**server_address**:7777 and enjoy!
+7. Run IridiumLive. 
+8. Open any browser at http://**server_address**:7777 and enjoy!
 
 #### Credits
 
