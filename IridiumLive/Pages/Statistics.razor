@@ -1,5 +1,7 @@
 ﻿@page "/statistics"
 
+@using System.Diagnostics
+
 @inject HttpClient Http
 @inject AppSettingsService appSettingsService
 
@@ -30,8 +32,8 @@ else
                     <td>@stat.Iras</td>
                     <td>@stat.Ibcs</td>
                     @*<td>
-                        <a href='/editsat/@sat.Id'>Edit</a>
-                    </td>*@
+                            <a href='/editsat/@sat.Id'>Edit</a>
+                        </td>*@
                 </tr>
 
             }
@@ -54,16 +56,23 @@ else
 
     private async Task PollForUpdates()
     {
-        pollingCancellationToken = new CancellationTokenSource();
-        while (!pollingCancellationToken.IsCancellationRequested)
+        try
         {
-            baseUrl = appSettingsService.GetBaseUrl();
-            stats = await Http.GetJsonAsync<Stat[]>(baseUrl + "/api/stats");
-            //satCount = sats.Count;
-            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
-            StateHasChanged();
-            
-            await Task.Delay(1000, pollingCancellationToken.Token);
+            pollingCancellationToken = new CancellationTokenSource();
+            while (!pollingCancellationToken.IsCancellationRequested)
+            {
+                baseUrl = appSettingsService.GetBaseUrl();
+                stats = await Http.GetJsonAsync<Stat[]>(baseUrl + "/api/stats");
+                //satCount = sats.Count;
+                latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+                StateHasChanged();
+
+                await Task.Delay(1000, pollingCancellationToken.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
         }
     }
 

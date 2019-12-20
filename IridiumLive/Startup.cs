@@ -49,6 +49,7 @@ namespace IridiumLive
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.AddSingleton<HttpClient>();
             services.AddSingleton<AppSettingsService>();
             services.AddDbContext<ServiceDbContext>(options =>

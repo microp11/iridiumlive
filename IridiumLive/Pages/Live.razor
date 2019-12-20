@@ -1,10 +1,7 @@
-﻿@*
-    // There is a difference between Iridium time and UTC, not yet implemented.
-    //*@ 
+﻿@page "/live"
 
 @using System.Diagnostics
 
-@page "/live"
 @inject HttpClient Http
 @inject AppSettingsService AppSettingsService
 @inject IJSRuntime JSRuntime
@@ -80,36 +77,43 @@ else
 
     private async Task PollForUpdates()
     {
-        pollingCancellationToken = new CancellationTokenSource();
-        while (!pollingCancellationToken.IsCancellationRequested)
+        try
         {
-            //Debug.WriteLine("call made   : {0}", lastUtcTicks);
-            liveIras = await Http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
-            var liveira = liveIras.LastOrDefault();
-            if (liveira != null)
+            pollingCancellationToken = new CancellationTokenSource();
+            while (!pollingCancellationToken.IsCancellationRequested)
             {
-                //at least one marker cand be extracted
-                List<Marker> coloredMarkers = new List<Marker>();
-                foreach (LiveIra record in liveIras)
+                //Debug.WriteLine("call made   : {0}", lastUtcTicks);
+                liveIras = await Http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
+                var liveira = liveIras.LastOrDefault();
+                if (liveira != null)
                 {
-                    Marker m = new Marker();
-                    m.Lat = record.Lat;
-                    m.Lon = record.Lon;
-                    m.Color = (record.Alt > 100) ? "red" : "blue";
-                    coloredMarkers.Add(m);
+                    //at least one marker cand be extracted
+                    List<Marker> coloredMarkers = new List<Marker>();
+                    foreach (LiveIra record in liveIras)
+                    {
+                        Marker m = new Marker();
+                        m.Lat = record.Lat;
+                        m.Lon = record.Lon;
+                        m.Color = (record.Alt > 100) ? "red" : "blue";
+                        coloredMarkers.Add(m);
+                    }
+
+                    lastUtcTicks = liveira.UtcTicks;
+                    //Debug.WriteLine("time changed: {0}", lastUtcTicks);
+                    await liveMap.RenderMarkers(coloredMarkers);
+                }
+                latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+                if (liveIras.Count > 0)
+                {
+                    StateHasChanged();
                 }
 
-                lastUtcTicks = liveira.UtcTicks;
-                //Debug.WriteLine("time changed: {0}", lastUtcTicks);
-                await liveMap.RenderMarkers(coloredMarkers);
+                await Task.Delay(1000, pollingCancellationToken.Token);
             }
-            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
-            if (liveIras.Count > 0)
-            {
-                StateHasChanged();
-            }
-
-            await Task.Delay(1000, pollingCancellationToken.Token);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
         }
     }
 

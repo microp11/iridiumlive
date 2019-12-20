@@ -1,5 +1,7 @@
 ﻿@page "/listsats"
 
+@using System.Diagnostics
+
 @inject HttpClient Http
 @inject AppSettingsService appSettingsService
 
@@ -55,16 +57,23 @@ else
 
     private async Task PollForUpdates()
     {
-        pollingCancellationToken = new CancellationTokenSource();
-        while (!pollingCancellationToken.IsCancellationRequested)
+        try
         {
-            baseUrl = appSettingsService.GetBaseUrl();
-            sats = await Http.GetJsonAsync<Sat[]>(baseUrl + "/api/sats");
-            satCount = sats.Count;
-            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
-            StateHasChanged();
+            pollingCancellationToken = new CancellationTokenSource();
+            while (!pollingCancellationToken.IsCancellationRequested)
+            {
+                baseUrl = appSettingsService.GetBaseUrl();
+                sats = await Http.GetJsonAsync<Sat[]>(baseUrl + "/api/sats");
+                satCount = sats.Count;
+                latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+                StateHasChanged();
 
-            await Task.Delay(5000, pollingCancellationToken.Token);
+                await Task.Delay(5000, pollingCancellationToken.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
         }
     }
 
@@ -73,4 +82,4 @@ else
         pollingCancellationToken?.Cancel();
         pollingCancellationToken?.Dispose();
     }
-}   
+}  

@@ -18,7 +18,7 @@
 </head>
 <body>
     <app>
-        <component type="typeof(App)" render-mode="ServerPrerendered" />
+        <component type="typeof(App)" render-mode="Server" />
     </app>
 
     <div id="blazor-error-ui">
@@ -35,53 +35,5 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/ComponentsLibrary/deliveryMap.js"></script>
     <script src="_content/ComponentsLibrary/leaflet/leaflet.js"></script>
-
-    <script>
-        // Wait until a 'reload' button appears
-        new MutationObserver((mutations, observer) => {
-            if (document.querySelector(".reload[style='display: block'")) {
-                // Now every 10 seconds, see if the server appears to be back, and if so, reload
-                async function attemptReload() {
-                    await fetch(''); // Check the server really is back
-                    location.reload();
-                }
-                observer.disconnect();
-                attemptReload();
-                setInterval(attemptReload, 10000);
-            }
-        }).observe(document.body, { childList: true, subtree: true });
-    </script>
-
-    @*<script>
-            window.AddResizeHandler = (element) => {
-                window.addEventListener("resize", function () {
-                    resizeElementHeight(element);
-                });
-            }
-
-            window.CallResizeHandler = (element) => {
-                resizeElementHeight(element);
-            }
-
-            window.onhashchange = function () {
-                window.removeEventListener("resize");
-            }
-
-            function resizeElementHeight(element) {
-                if (element != null) {
-                    var height = 0;
-                    var body = window.document.body;
-                    if (window.innerHeight) {
-                        height = window.innerHeight;
-                    } else if (body.parentElement.clientHeight) {
-                        height = body.parentElement.clientHeight;
-                    } else if (body && body.clientHeight) {
-                        height = body.clientHeight;
-                    }
-                    var element2 = document.getElementById(element);
-                    element2.style.height = ((height - element2.offsetTop) + "px");
-                }
-            }
-        </script>*@
 </body>
 </html>

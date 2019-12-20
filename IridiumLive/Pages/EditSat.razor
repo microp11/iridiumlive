@@ -1,5 +1,7 @@
 ﻿@page "/editsat/{id}"
 
+@using System.Diagnostics
+
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject AppSettingsService AppSettingsService
@@ -37,14 +39,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        baseUrl = AppSettingsService.GetBaseUrl();
-        sat = await Http.GetJsonAsync<Sat>(baseUrl + "/api/sats/" + id);
+        try
+        {
+            baseUrl = AppSettingsService.GetBaseUrl();
+            sat = await Http.GetJsonAsync<Sat>(baseUrl + "/api/sats/" + id);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 
     protected async Task UpdateSat()
     {
-        await Http.PutJsonAsync(baseUrl + "/api/sats/" + id, sat);
-        NavigationManager.NavigateTo("listsats");
+        try
+        {
+            await Http.PutJsonAsync(baseUrl + "/api/sats/" + id, sat);
+            NavigationManager.NavigateTo("listsats");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 
     void Cancel()
