@@ -15,7 +15,7 @@ At this time the following ports have been hard coded:
  7777: IridiumLive server port,
 15007: udp port for receiving data from gr-iridium and iridium-toolkit.
 ```
-The data will be provided by your personal install of gr-iridium and iridium-toolkit (see [gr-iridium](https://github.com/muccc/gr-iridium) and [iridium-toolkit](https://github.com/muccc/iridium-toolkit)).
+The data will be provided by your personal install of gr-iridium and iridium-toolkit (see [gr-iridium](https://github.com/muccc/gr-iridium) and [iridium-toolkit](https://github.com/muccc/iridium-toolkit)). See bottom of page for quick instructions.
 1. On the same machine as gr-iridium download and extract the python udp transmitter [udp-for-il.py](udp-for-il.py). Please install in the same folder as gr-iridium.
 2. Depending of your intended OS target, download and extract the appropriate IridiumLive archive. There is no installation needed, simply extract in a folder of its own. You can extract either on the same machine or to a different one.
 3. In the udp-for-il.py script, the **server_address** **(192.168.2.10)** denotes the machine where IridiumLive is installed. Modify it accordingly. This address is also where you will open your browser to later on:
@@ -65,3 +65,43 @@ This is my first .NET Core web app. Blazor on top of it. Be gentle!
 <p align="center">
   <img alt="Screenshot" style="max-width:100%;" src="prerelease1.png">
 </p>
+
+#### Quick install on gr-iridium and iridium-toolkit for Rapberry Pi
+
+The following has been tested on RPi 3b running Raspbian Buster Lite Minimal image based on Debian Buster.
+
+```
+sudo apt update
+sudo apt upgrade -y
+
+sudo apt install python-pip python-dev build-essential
+sudo -H pip install --upgrade pip
+sudo -H pip install --upgrade virtualenv
+sudo -H pip install --upgrade setuptools
+
+sudo apt install libboost-all-dev
+
+sudo -H pip install pyBOMBS
+
+sudo apt install pypy
+
+sudo apt install gnuradio gr-osmosdr
+
+sudo apt install hackrf
+
+sudo apt-get install git
+sudo apt-get install cmake
+sudo apt-get install swig
+sudo apt-get install doxygen
+
+git clone https://github.com/muccc/gr-iridium.git
+cd gr-iridium
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
+
+git clone https://github.com/muccc/iridium-toolkit.git
+```
