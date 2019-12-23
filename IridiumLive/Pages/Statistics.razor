@@ -2,7 +2,7 @@
 
 @using System.Diagnostics
 
-@inject HttpClient Http
+@inject HttpClient http
 @inject AppSettingsService appSettingsService
 
 @implements IDisposable
@@ -31,9 +31,6 @@ else
                     <td>@stat.SatNo</td>
                     <td>@stat.Iras</td>
                     <td>@stat.Ibcs</td>
-                    @*<td>
-                            <a href='/editsat/@sat.Id'>Edit</a>
-                        </td>*@
                 </tr>
 
             }
@@ -46,7 +43,6 @@ else
     private string baseUrl;
     private string latestUpdate;
     private CancellationTokenSource pollingCancellationToken;
-    //private int satCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,8 +58,7 @@ else
             while (!pollingCancellationToken.IsCancellationRequested)
             {
                 baseUrl = appSettingsService.GetBaseUrl();
-                stats = await Http.GetJsonAsync<Stat[]>(baseUrl + "/api/stats");
-                //satCount = sats.Count;
+                stats = await http.GetJsonAsync<Stat[]>(baseUrl + "/api/stats");
                 latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
                 StateHasChanged();
 

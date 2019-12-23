@@ -27,8 +27,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 
@@ -56,45 +56,9 @@ namespace IridiumLive
                    options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
 
             services.AddServerSideBlazor().AddCircuitOptions(o => o.DetailedErrors = true);
-
-            //TODO: this is incorrect! How to fix?
-            var rxService = services.BuildServiceProvider().GetService<ServiceDbContext>();
-            rxLineService = new AppService(rxService);
-
             services.AddLocalization();
-
-            //services.AddScoped<AppService>(s =>
-            //{
-            //    var dbctx = s.GetService<ServiceDbContext>();
-            //    rxLineService = new AppService(dbctx);
-            //    return rxLineService;
-            //});
-
-            try
-            {
-                int port = int.TryParse(Configuration["Data:UdpListeningPort"], out int i) ? i : 15007;
-                UdpReceiver srv = new UdpReceiver(port);
-                srv.OnUDPPacket += Srv_OnUDPPacket;
-                srv.Start();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
         }
 
-        private async void Srv_OnUDPPacket(object sender, UdpPacketArgs e)
-        {
-            var rxLine = Encoding.UTF8.GetString(e.UdpPacket, 0, e.UdpPacket.Length);
-            if (rxLine == null)
-            {
-                return;
-            }
-            await rxLineService.AddRxLine(rxLine);
-            //Debug.WriteLine(rxLine);
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -107,16 +71,42 @@ namespace IridiumLive
             }
 
             app.UseStaticFiles();
-            
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-            
+
+            var scope = app.ApplicationServices.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            try
+            {
+                var context = scope.ServiceProvider.GetService<ServiceDbContext>();
+                //context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+                rxLineService = new AppService(context);
+
+                int port = int.TryParse(Configuration["IridiumLiveSettings:UdpListeningPort"], out int i) ? i : 15007;
+                UdpReceiver srv = new UdpReceiver(port);
+                srv.OnUDPPacket += Srv_OnUDPPacket;
+                srv.Start();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error during system startup:configuration.");
+            }
+        }
+
+        private async void Srv_OnUDPPacket(object sender, UdpPacketArgs e)
+        {
+            var rxLine = Encoding.UTF8.GetString(e.UdpPacket, 0, e.UdpPacket.Length);
+            if (rxLine == null)
+            {
+                return;
+            }
+            await rxLineService.AddRxLine(rxLine);
         }
     }
 }

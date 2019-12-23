@@ -2,9 +2,8 @@
 
 @using System.Diagnostics
 
-@inject HttpClient Http
-@inject AppSettingsService AppSettingsService
-@inject IJSRuntime JSRuntime
+@inject HttpClient http
+@inject AppSettingsService appSettingsService
 
 @implements IDisposable
 
@@ -14,11 +13,6 @@
 <div class="track-order-map">
     <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
 </div>
-@*
-    Add some buttons under the map for actions (set interval)
-    <button class="btn btn-primary" @onclick="doit">
-        Draw circle
-    </button>*@
 
 @if (liveIras == null)
 {
@@ -41,7 +35,7 @@ else
         <tbody>
             @foreach (var liveIra in liveIras)
             {
-                string altitude = (liveIra.Alt > 700) ? string.Format("{0} km", liveIra.Alt) : string.Format("{0} m", liveIra.Alt);
+                string altitude = string.Format("{0} km", liveIra.Alt);
                 <tr>
                     <td>@liveIra.Name</td>
                     <td>@liveIra.Time</td>
@@ -69,7 +63,7 @@ else
     {
         lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
         SetLocation(location);
-        baseUrl = AppSettingsService.GetBaseUrl();
+        baseUrl = appSettingsService.GetBaseUrl();
 
         pollingCancellationToken?.Cancel();
         await PollForUpdates();
@@ -82,8 +76,7 @@ else
             pollingCancellationToken = new CancellationTokenSource();
             while (!pollingCancellationToken.IsCancellationRequested)
             {
-                //Debug.WriteLine("call made   : {0}", lastUtcTicks);
-                liveIras = await Http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
+                liveIras = await http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
                 var liveira = liveIras.LastOrDefault();
                 if (liveira != null)
                 {
@@ -99,7 +92,6 @@ else
                     }
 
                     lastUtcTicks = liveira.UtcTicks;
-                    //Debug.WriteLine("time changed: {0}", lastUtcTicks);
                     await liveMap.RenderMarkers(coloredMarkers);
                 }
                 latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");

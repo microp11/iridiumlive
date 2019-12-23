@@ -50,7 +50,7 @@ namespace IridiumLive.Data
 
                 if (words[0] == "IRA:")
                 {
-                    Debug.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks);
+                    //Debug.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks);
 
                     Ira ira = new Ira
                     {

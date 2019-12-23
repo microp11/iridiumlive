@@ -2,7 +2,7 @@
 
 @using System.Diagnostics
 
-@inject HttpClient Http
+@inject HttpClient http
 @inject AppSettingsService appSettingsService
 
 @implements IDisposable
@@ -63,7 +63,7 @@ else
             while (!pollingCancellationToken.IsCancellationRequested)
             {
                 baseUrl = appSettingsService.GetBaseUrl();
-                sats = await Http.GetJsonAsync<Sat[]>(baseUrl + "/api/sats");
+                sats = await http.GetJsonAsync<Sat[]>(baseUrl + "/api/sats");
                 satCount = sats.Count;
                 latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
                 StateHasChanged();
