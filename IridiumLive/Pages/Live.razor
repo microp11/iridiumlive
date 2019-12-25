@@ -69,6 +69,7 @@ else
     {
         if (firstRender)
         {
+            lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
             SetLocation(location);
         }
         StartTimer(interval);
@@ -94,7 +95,6 @@ else
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
         {
-            //replace this with an actual service, no need to call the http, call the service
             liveIras = await liveService.GetLiveIraAsync(lastUtcTicks);
             if (oldLiveIras == null)
             {

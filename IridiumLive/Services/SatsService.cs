@@ -34,6 +34,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 
 namespace IridiumLive.Services
 {
@@ -136,9 +137,9 @@ namespace IridiumLive.Services
             {
                 string[] words = rxLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 string[] words1 = words[1].Split('-');
-                DateTimeOffset satTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(words1[1])).AddMilliseconds(Convert.ToInt64(words[2])).ToLocalTime();
+                DateTimeOffset satTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(words1[1], CultureInfo.InvariantCulture)).AddMilliseconds(Convert.ToInt64(words[2], CultureInfo.InvariantCulture)).ToLocalTime();
                 long utcTicks = satTime.ToUniversalTime().UtcTicks;
-                int quality = Convert.ToInt32(words[4].TrimEnd('%'));
+                int quality = Convert.ToInt32(words[4].TrimEnd('%'), CultureInfo.InvariantCulture);
                 int satNo;
                 Debug.WriteLine("{0} {1}", words[0], satTime);
 
@@ -158,19 +159,19 @@ namespace IridiumLive.Services
                     };
 
                     //sat:26 -> [8]
-                    satNo = Convert.ToInt32(words[8].Substring(4));
+                    satNo = Convert.ToInt32(words[8].Substring(4), CultureInfo.InvariantCulture);
                     ira.SatNo = satNo;
 
                     //beam:44 -> [9]
-                    ira.Beam = Convert.ToInt32(words[9].Substring(5));
+                    ira.Beam = Convert.ToInt32(words[9].Substring(5), CultureInfo.InvariantCulture);
 
                     //pos=(+51.18/-068.82) -> [10]
                     string[] words2 = words[10].Split('(', '/', ')');
-                    ira.Lat = Convert.ToDouble(words2[1]);
-                    ira.Lon = Convert.ToDouble(words2[2]);
+                    ira.Lat = Convert.ToDouble(words2[1], CultureInfo.InvariantCulture);
+                    ira.Lon = Convert.ToDouble(words2[2], CultureInfo.InvariantCulture);
 
                     //alt=796 -> [11]
-                    ira.Alt = Convert.ToDouble(words[11].Substring(4));
+                    ira.Alt = Convert.ToDouble(words[11].Substring(4), CultureInfo.InvariantCulture);
 
                     _context.Iras.Add(ira);
                     try
@@ -196,11 +197,11 @@ namespace IridiumLive.Services
                     };
 
                     //sat:26 -> [9]
-                    satNo = Convert.ToInt32(words[9].Substring(4));
+                    satNo = Convert.ToInt32(words[9].Substring(4), CultureInfo.InvariantCulture);
                     ibc.SatNo = satNo;
 
                     //cell:31 -> [10]
-                    ibc.Cell = Convert.ToInt32(words[10].Substring(5));
+                    ibc.Cell = Convert.ToInt32(words[10].Substring(5), CultureInfo.InvariantCulture);
 
                     _context.Ibcs.Add(ibc);
                     try
