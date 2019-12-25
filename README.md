@@ -49,7 +49,7 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 169
 ```
 7. Run IridiumLive.
-8. Ensure your computer time is accurate as the live display only goes back in time a few seconds. 
+8. *Set up time accurately on the gr-iridium machine!* 
 9. Open any browser at http://**server_address**:7777 and enjoy!
 
 #### Credits
