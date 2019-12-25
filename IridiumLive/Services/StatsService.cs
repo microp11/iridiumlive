@@ -16,13 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with IridiumLive.  If not, see <http://www.gnu.org/licenses/>.
  *
- * This was a lot of work, in the end the only solution i was able to implement is this one below:
- * https://stackoverflow.com/questions/38417051/what-goes-into-dbcontextoptions-when-invoking-a-new-dbcontext
- * 
- * I have tried these ones as well, unsuccessfully:
- * https://stackoverflow.com/questions/58346573/blazor-a-second-operation-started-on-this-context-before-a-previous-operation-c/58347502#58347502
- * https://github.com/aspnet/AspNetCore/issues/10448
- * https://stackoverflow.com/questions/58346573/blazor-a-second-operation-started-on-this-context-before-a-previous-operation-c
  *
  */
 

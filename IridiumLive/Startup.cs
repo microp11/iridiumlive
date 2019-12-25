@@ -44,7 +44,6 @@ namespace IridiumLive
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
@@ -91,7 +90,7 @@ namespace IridiumLive
             try
             {
                 var context = scope.ServiceProvider.GetService<IridiumLiveDbContext>();
-                context.Database.EnsureDeleted();
+                //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
                 satsService = new SatsService(Configuration);
 
