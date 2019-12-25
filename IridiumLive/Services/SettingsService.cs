@@ -19,21 +19,20 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace IridiumLive.Data
+namespace IridiumLive.Services
 {
-    public class ServiceDbContext : DbContext
+    internal class SettingsService
     {
-        public ServiceDbContext(DbContextOptions<ServiceDbContext> options)
-           : base(options)
+        private readonly IConfiguration _configuration;
+        public SettingsService(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
-
-        public DbSet<Sat> Sats { get; set; }
-        public DbSet<Ira> Iras { get; set; }
-        public DbSet<LiveIra> LiveIras { get; set; }
-        public DbSet<Ibc> Ibcs { get; set; }
-        public DbSet<Stat> Stats { get; set; }
+        public string GetBaseUrl()
+        {
+            return _configuration.GetValue<string>("Settings:BaseUrl");
+        }
     }
 }

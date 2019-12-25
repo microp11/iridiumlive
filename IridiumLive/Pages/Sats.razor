@@ -1,0 +1,83 @@
+﻿@page "/sats"
+
+@using System.Diagnostics
+
+@inject ISatsService satsService
+@inject TimerService timer
+
+<h2>Satellites</h2>
+<span class="size-label">Last page update: @latestUpdate</span>
+
+@if (sats == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Sat</th>
+                <th>Name</th>
+                <th>Notes</th>
+                <th>@satCount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sat in sats)
+            {
+                <tr>
+                    <td>@sat.SatNo</td>
+                    <td>@sat.Name</td>
+                    <td>@sat.Notes</td>
+                    <td>
+                        <a href='/editsat/@sat.Id'>Edit</a>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<Sat> sats;
+    private string latestUpdate;
+    private int satCount = 0;
+    private const int interval = 5000;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        StartTimer(interval);
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void StartTimer(int interval)
+    {
+        timer.SetTimer(interval);
+        timer.OnElapsed -= TimerElapsedHandler;
+        timer.OnElapsed += TimerElapsedHandler;
+        //Debug.WriteLine("Timer Sats Started. {0}", Thread.CurrentThread.ManagedThreadId);
+    }
+
+    private void TimerElapsedHandler()
+    {
+        //Debug.WriteLine("Timer Sats Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
+        InvokeAsync(async () => await ReloadOnTimer());
+    }
+
+    private async Task ReloadOnTimer()
+    {
+        try
+        {
+            sats = await satsService.GetSatsAsync();
+            satCount = sats.Count();
+            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+    }
+}  

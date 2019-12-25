@@ -19,15 +19,21 @@
  *
  */
 
-using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace IridiumLive.Data
 {
-    public class Stat
+    public class IridiumLiveDbContext : DbContext
     {
-        [Key]
-        public int SatNo { get; set; }
-        public int Iras { get; set; }
-        public int Ibcs { get; set; }
+        public IridiumLiveDbContext(DbContextOptions<IridiumLiveDbContext> options)
+           : base(options)
+        {
+        }
+
+        public DbSet<Sat> Sats { get; set; }
+        public DbSet<Ira> Iras { get; set; }
+        public DbSet<LiveIra> LiveIras { get; set; }
+        public DbSet<Ibc> Ibcs { get; set; }
+        public DbSet<Stat> Stats { get; set; }
     }
 }

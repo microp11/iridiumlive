@@ -16,28 +16,122 @@
  * You should have received a copy of the GNU General Public License
  * along with IridiumLive.  If not, see <http://www.gnu.org/licenses/>.
  *
+ * This was a lot of work, in the end the only solution i was able to implement is this one below:
+ * https://stackoverflow.com/questions/38417051/what-goes-into-dbcontextoptions-when-invoking-a-new-dbcontext
+ * 
+ * I have tried these ones as well, unsuccessfully:
+ * https://stackoverflow.com/questions/58346573/blazor-a-second-operation-started-on-this-context-before-a-previous-operation-c/58347502#58347502
+ * https://github.com/aspnet/AspNetCore/issues/10448
+ * https://stackoverflow.com/questions/58346573/blazor-a-second-operation-started-on-this-context-before-a-previous-operation-c
  *
  */
 
-using Microsoft.EntityFrameworkCore;
+using IridiumLive.Data;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace IridiumLive.Data
+namespace IridiumLive.Services
 {
-    public class AppService
+    public interface ISatsService
     {
-        private readonly ServiceDbContext _context;
+        public Task<ICollection<Sat>> GetSatsAsync();
+        
+        public Task<Sat> GetSatAsync(string id);
 
-        public AppService(ServiceDbContext context)
+        public Task<bool> PostSatAsync(Sat sat);
+
+        public Task<bool> PutSatAsync(string id, Sat sat);
+
+        public Task<bool> AddRxLineAsync(string rxLine);
+    }
+
+    public class SatsService : ISatsService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
+        readonly DbContextOptionsBuilder<IridiumLiveDbContext> _optionsBuilder;
+
+        public SatsService(IConfiguration configuration)
         {
-            _context = context;
+            _configuration = configuration;
+            _optionsBuilder = new DbContextOptionsBuilder<IridiumLiveDbContext>();
+            _connectionString = _configuration.GetConnectionString("Sqlite");
+            _optionsBuilder.UseSqlite(_connectionString);
         }
 
-        public async Task<bool> AddRxLine(string rxLine)
+        public async Task<ICollection<Sat>> GetSatsAsync()
         {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
+            return await _context.Sats.OrderBy(s => s.SatNo).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<Sat> GetSatAsync(string id)
+        {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
+            return await _context.Sats.FindAsync(id);
+        }
+
+        public async Task<bool> PostSatAsync(Sat sat)
+        {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
+            _context.Sats.Add(sat);
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (SatExists(sat.Id))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> PutSatAsync(string id, Sat sat)
+        {
+            if (id != sat.Id)
+            {
+                return false;
+            }
+
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
+            _context.Entry(sat).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SatExists(id))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> AddRxLineAsync(string rxLine)
+        {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
             try
             {
                 string[] words = rxLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -46,7 +140,7 @@ namespace IridiumLive.Data
                 long utcTicks = satTime.ToUniversalTime().UtcTicks;
                 int quality = Convert.ToInt32(words[4].TrimEnd('%'));
                 int satNo;
-                //Debug.WriteLine("{0} {1}", words[0], satTime);
+                Debug.WriteLine("{0} {1}", words[0], satTime);
 
                 if (words[0] == "IRA:")
                 {
@@ -153,8 +247,15 @@ namespace IridiumLive.Data
             }
         }
 
+        private bool SatExists(string id)
+        {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
+            return _context.Sats.Any(e => e.Id == id);
+        }
+
         private bool SatExists(int rxId)
         {
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options); 
             return _context.Sats.Any(e => e.SatNo == rxId);
         }
     }

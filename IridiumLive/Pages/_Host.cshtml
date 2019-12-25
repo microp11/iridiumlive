@@ -18,6 +18,7 @@
 </head>
 <body>
     <app>
+        @*Cannot do ServerPrerendered because of the current implementation of the polling mechanism.*@
         <component type="typeof(App)" render-mode="Server" />
     </app>
 

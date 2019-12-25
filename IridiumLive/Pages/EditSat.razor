@@ -2,9 +2,8 @@
 
 @using System.Diagnostics
 
-@inject HttpClient http
+@inject ISatsService satsService
 @inject NavigationManager navigationManager
-@inject AppSettingsService appSettingsService
 
 <h2>Edit sat @sat.SatNo</h2>
 <hr />
@@ -33,7 +32,6 @@
 
     [Parameter]
     public string id { get; set; }
-    string baseUrl;
 
     Sat sat = new Sat();
 
@@ -41,8 +39,7 @@
     {
         try
         {
-            baseUrl = appSettingsService.GetBaseUrl();
-            sat = await http.GetJsonAsync<Sat>(baseUrl + "/api/sats/" + id);
+            sat = await satsService.GetSatAsync(id);
         }
         catch (Exception ex)
         {
@@ -54,8 +51,8 @@
     {
         try
         {
-            await http.PutJsonAsync(baseUrl + "/api/sats/" + id, sat);
-            navigationManager.NavigateTo("listsats");
+            await satsService.PutSatAsync(id, sat);
+            navigationManager.NavigateTo("sats");
         }
         catch (Exception ex)
         {
@@ -65,6 +62,6 @@
 
     void Cancel()
     {
-        navigationManager.NavigateTo("listsats");
+        navigationManager.NavigateTo("sats");
     }
 }   

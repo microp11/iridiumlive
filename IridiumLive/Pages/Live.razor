@@ -2,10 +2,8 @@
 
 @using System.Diagnostics
 
-@inject HttpClient http
-@inject AppSettingsService appSettingsService
-
-@implements IDisposable
+@inject ILiveService liveService
+@inject TimerService timer
 
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
@@ -14,12 +12,20 @@
     <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
 </div>
 
-@if (liveIras == null)
+@if (liveIras == null || liveMap == null)
 {
     <p>Awaiting for data...</p>
 }
 else
 {
+    if (liveIras.Count == 0)
+    {
+        liveIras = oldLiveIras;
+    }
+    else
+    {
+        oldLiveIras = liveIras;
+    }
     <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
     <table class='table'>
         <thead>
@@ -53,66 +59,77 @@ else
     private string latestUpdate;
     private Marker location = new Marker();
     private List<Marker> markers = new List<Marker>();
-    private ICollection<LiveIra> liveIras;
-    private string baseUrl;
+    private ICollection<LiveIra> liveIras, oldLiveIras;
     private long lastUtcTicks;
-    private CancellationTokenSource pollingCancellationToken;
     private Map liveMap;
+    private const int interval = 5000;
+    private bool disposed = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
-        SetLocation(location);
-        baseUrl = appSettingsService.GetBaseUrl();
-
-        pollingCancellationToken?.Cancel();
-        await PollForUpdates();
+        if (firstRender)
+        {
+            SetLocation(location);
+        }
+        StartTimer(interval);
+        return base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task PollForUpdates()
+    private void StartTimer(int interval)
     {
+        timer.SetTimer(interval);
+        timer.OnElapsed -= TimerElapsedHandler;
+        timer.OnElapsed += TimerElapsedHandler;
+        //Debug.WriteLine("Timer Live Started. {0}", Thread.CurrentThread.ManagedThreadId);
+    }
+
+    private void TimerElapsedHandler()
+    {
+        //Debug.WriteLine("Timer live Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
+        InvokeAsync(async () => await ReloadOnTimer());
+    }
+
+    private async Task ReloadOnTimer()
+    {
+        //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
         {
-            pollingCancellationToken = new CancellationTokenSource();
-            while (!pollingCancellationToken.IsCancellationRequested)
+            //replace this with an actual service, no need to call the http, call the service
+            liveIras = await liveService.GetLiveIraAsync(lastUtcTicks);
+            if (oldLiveIras == null)
             {
-                liveIras = await http.GetJsonAsync<LiveIra[]>(baseUrl + "/api/view/ira?utcTicks=" + lastUtcTicks);
-                var liveira = liveIras.LastOrDefault();
-                if (liveira != null)
-                {
-                    //at least one marker cand be extracted
-                    List<Marker> coloredMarkers = new List<Marker>();
-                    foreach (LiveIra record in liveIras)
-                    {
-                        Marker m = new Marker();
-                        m.Lat = record.Lat;
-                        m.Lon = record.Lon;
-                        m.Color = (record.Alt > 100) ? "red" : "blue";
-                        coloredMarkers.Add(m);
-                    }
-
-                    lastUtcTicks = liveira.UtcTicks;
-                    await liveMap.RenderMarkers(coloredMarkers);
-                }
-                latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
-                if (liveIras.Count > 0)
-                {
-                    StateHasChanged();
-                }
-
-                await Task.Delay(1000, pollingCancellationToken.Token);
+                oldLiveIras = liveIras;
             }
+            var liveira = liveIras.LastOrDefault();
+            if (liveira != null)
+            {
+                //at least one marker can be extracted
+                List<Marker> coloredMarkers = new List<Marker>();
+                foreach (LiveIra record in liveIras)
+                {
+                    Marker m = new Marker();
+                    m.Lat = record.Lat;
+                    m.Lon = record.Lon;
+                    m.Color = (record.Alt > 100) ? "red" : "blue";
+                    coloredMarkers.Add(m);
+                }
+
+                //to gain the reference to liveMap we need to render the page at least once
+                if (liveMap != null)
+                {
+                    await liveMap.RenderMarkers(coloredMarkers);
+                    lastUtcTicks = liveira.UtcTicks;
+                }
+            }
+
+            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
         }
-    }
-
-    void IDisposable.Dispose()
-    {
-        pollingCancellationToken?.Cancel();
-        pollingCancellationToken?.Dispose();
     }
 
     private void SetLocation(Marker location)

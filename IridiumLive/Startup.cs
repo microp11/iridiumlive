@@ -21,6 +21,7 @@
 
 using BlazorUdp.Udp;
 using IridiumLive.Data;
+using IridiumLive.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,20 +30,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Net.Http;
 using System.Text;
 
 namespace IridiumLive
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+        private ISatsService satsService;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
-        private AppService rxLineService;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -50,13 +50,20 @@ namespace IridiumLive
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddSingleton<HttpClient>();
-            services.AddSingleton<AppSettingsService>();
-            services.AddDbContext<ServiceDbContext>(options =>
-                   options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
+            services.AddDbContext<IridiumLiveDbContext>(options =>
+                   options.UseSqlite(Configuration.GetConnectionString("Sqlite")),
+                   ServiceLifetime.Transient);
 
             services.AddServerSideBlazor().AddCircuitOptions(o => o.DetailedErrors = true);
             services.AddLocalization();
+
+            services.AddSingleton<SettingsService>();
+
+            services.AddScoped<ISatsService, SatsService>();
+            services.AddScoped<IStatsService, StatsService>();
+            services.AddScoped<ILiveService, LiveService>();
+
+            services.AddTransient<TimerService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -83,10 +90,10 @@ namespace IridiumLive
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             try
             {
-                var context = scope.ServiceProvider.GetService<ServiceDbContext>();
-                //context.Database.EnsureDeleted();
+                var context = scope.ServiceProvider.GetService<IridiumLiveDbContext>();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
-                rxLineService = new AppService(context);
+                satsService = new SatsService(Configuration);
 
                 int port = int.TryParse(Configuration["IridiumLiveSettings:UdpListeningPort"], out int i) ? i : 15007;
                 UdpReceiver srv = new UdpReceiver(port);
@@ -106,7 +113,7 @@ namespace IridiumLive
             {
                 return;
             }
-            await rxLineService.AddRxLine(rxLine);
+            await satsService.AddRxLineAsync(rxLine);
         }
     }
 }
