@@ -16,32 +16,24 @@
 }
 else
 {
-    <table class='table'>
-        <thead>
-            <tr>
-                <th>Sat</th>
-                <th>Ring alerts</th>
-                <th>Broadcasts</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var stat in stats)
-            {
-                <tr>
-                    <td>@stat.SatNo</td>
-                    <td>@stat.Iras</td>
-                    <td>@stat.Ibcs</td>
-                </tr>
-
-            }
-        </tbody>
-    </table>
+    <MatTable Items="@stats">
+        <MatTableHeader>
+            <th>Sat</th>
+            <th>Ring alerts</th>
+            <th>Broadcasts</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.SatNo</td>
+            <td>@context.Iras</td>
+            <td>@context.Ibcs</td>
+        </MatTableRow>
+    </MatTable>
 }
 
 @code {
     private ICollection<Stat> stats;
     private string latestUpdate;
-    private const int interval = 5000;
+    private const int interval = 1000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

@@ -32,7 +32,7 @@ namespace IridiumLive.Data
 
         public DbSet<Sat> Sats { get; set; }
         public DbSet<Ira> Iras { get; set; }
-        public DbSet<LiveIra> LiveIras { get; set; }
+        public DbSet<ViewIra> ViewIras { get; set; }
         public DbSet<Ibc> Ibcs { get; set; }
         public DbSet<Stat> Stats { get; set; }
     }

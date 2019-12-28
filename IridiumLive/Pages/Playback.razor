@@ -1,48 +1,37 @@
-﻿@page "/live"
+﻿@page "/playback"
 
 @using System.Diagnostics
 
-@inject ILiveService liveService
-@inject TimerService timer
+@inject IPlaybackService playbackService
+@inject IStatsService statsService
 
-<h2>Live view for Iridium ring alert bursts</h2>
+<h2>Playback for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
 
 <div class="track-order-map">
     <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
 </div>
 <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
+<MatDatePicker Label="From" Enable24hours="true" Format="MM/dd/yy HH:mm" @bind-Value="FromValue" EnableTime="true"></MatDatePicker>
+<MatDatePicker Label="To" Enable24hours="true" Format="MM/dd/yy HH:mm" @bind-Value="ToValue" EnableTime="true"></MatDatePicker>
+<MatButton Outlined="true" @onclick="LoadDataAsync">Load</MatButton>
 
-@if (viewIras == null || liveMap == null)
+@if (stats == null || stats.Count == 0)
 {
-    <p>Awaiting for data...</p>
+    <p>Make your selection...</p>
 }
 else
 {
-    if (viewIras.Count == 0)
-    {
-        viewIras = oldViewIras;
-    }
-    else
-    {
-        oldViewIras = viewIras;
-    }
-    <MatTable Items="@viewIras">
+    <MatTable Items="@stats">
         <MatTableHeader>
             <th>Sat</th>
-            <th>Time</th>
-            <th>Quality</th>
-            <th>Beam</th>
-            <th>Coordinates</th>
-            <th>Altitude</th>
+            <th>Ring alerts</th>
+            <th>Broadcasts</th>
         </MatTableHeader>
         <MatTableRow>
-            <td>@context.Name</td>
-            <td>@context.Time</td>
-            <td>@context.Quality %</td>
-            <td>@context.Beam</td>
-            <td>@context.Lat N @context.Lon E</td>
-            <td>@string.Format("{0} km", context.Alt);</td>
+            <td>@context.SatNo</td>
+            <td>@context.Iras</td>
+            <td>@context.Ibcs</td>
         </MatTableRow>
     </MatTable>
 }
@@ -51,52 +40,40 @@ else
     private string latestUpdate;
     private Marker location = new Marker();
     private List<Marker> markers = new List<Marker>();
-    private ICollection<ViewIra> viewIras, oldViewIras;
-    private long lastUtcTicks;
+    private ICollection<ViewIra> playbackIras;
+    private ICollection<Stat> stats;
     private Map liveMap;
-    private const int interval = 1000;
+
+    public DateTime FromValue { get; set; } = DateTime.Now.AddMinutes(-10).ToLocalTime();
+    public DateTime ToValue { get; set; } = DateTime.Now.ToLocalTime();
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
             SetLocation(location);
         }
-        StartTimer(interval);
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    private void StartTimer(int interval)
+    private async Task LoadDataAsync()
     {
-        timer.SetTimer(interval);
-        timer.OnElapsed -= TimerElapsedHandler;
-        timer.OnElapsed += TimerElapsedHandler;
-        //Debug.WriteLine("Timer Live Started. {0}", Thread.CurrentThread.ManagedThreadId);
-    }
+        //to gain the reference to liveMap we need to render the page at least once
+        if (liveMap != null)
+        {
+            await liveMap.ClearMarkers(location);
+        }
 
-    private void TimerElapsedHandler()
-    {
-        //Debug.WriteLine("Timer live Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
-        InvokeAsync(async () => await ReloadOnTimer());
-    }
-
-    private async Task ReloadOnTimer()
-    {
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
         {
-            viewIras = await liveService.GetLiveIraAsync(lastUtcTicks);
-            if (oldViewIras == null)
-            {
-                oldViewIras = viewIras;
-            }
-            var liveira = viewIras.LastOrDefault();
-            if (liveira != null)
+            playbackIras = await playbackService.GetViewIraAsync(FromValue.ToLocalTime(), ToValue.ToLocalTime());
+            var playbackira = playbackIras.LastOrDefault();
+            if (playbackira != null)
             {
                 //at least one marker can be extracted
                 List<Marker> coloredMarkers = new List<Marker>();
-                foreach (ViewIra record in viewIras)
+                foreach (ViewIra record in playbackIras)
                 {
                     Marker m = new Marker();
                     m.Lat = record.Lat;
@@ -108,10 +85,12 @@ else
                 //to gain the reference to liveMap we need to render the page at least once
                 if (liveMap != null)
                 {
+                    //await liveMap.ClearMarkers(location);
                     await liveMap.RenderMarkers(coloredMarkers);
-                    lastUtcTicks = liveira.UtcTicks;
                 }
             }
+
+            stats = await statsService.GetStatsAsync(FromValue, ToValue);
 
             latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
 
@@ -128,5 +107,11 @@ else
         location.Lat = 46.2382;
         location.Lon = -63.1311;
         location.Color = "green";
+    }
+
+    string ButtonState = "";
+    void Click(EventArgs e)
+    {
+        ButtonState = "Clicked";
     }
 }   

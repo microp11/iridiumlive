@@ -14,37 +14,29 @@
 }
 else
 {
-    <table class='table'>
-        <thead>
-            <tr>
-                <th>Sat</th>
-                <th>Name</th>
-                <th>Notes</th>
-                <th>@satCount</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var sat in sats)
-            {
-                <tr>
-                    <td>@sat.SatNo</td>
-                    <td>@sat.Name</td>
-                    <td>@sat.Notes</td>
-                    <td>
-                        <a href='/editsat/@sat.Id'>Edit</a>
-                    </td>
-                </tr>
-
-            }
-        </tbody>
-    </table>
+    <MatTable Items="@sats">
+        <MatTableHeader>
+            <th>Sat</th>
+            <th>Name</th>
+            <th>Notes</th>
+            <th>@satCount</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.SatNo</td>
+            <td>@context.Name</td>
+            <td>@context.Notes</td>
+            <td>
+                <a href='/editsat/@context.Id'>Edit</a>
+            </td>
+        </MatTableRow>
+    </MatTable>
 }
 
 @code {
     private ICollection<Sat> sats;
     private string latestUpdate;
     private int satCount = 0;
-    private const int interval = 5000;
+    private const int interval = 1000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -63,10 +55,10 @@ else
     private void TimerElapsedHandler()
     {
         //Debug.WriteLine("Timer Sats Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
-        InvokeAsync(async () => await ReloadOnTimer());
+        InvokeAsync(async () => await LoadDataAsync());
     }
 
-    private async Task ReloadOnTimer()
+    private async Task LoadDataAsync()
     {
         try
         {

@@ -23,13 +23,14 @@ using System;
 
 namespace IridiumLive.Data
 {
-    public class Ira
+    public class ViewIra
     {
         public string Id { get; set; }
         public DateTimeOffset Time { get; set; }
         public long UtcTicks { get; set; }
         public int Quality { get; set; }
         public int SatNo { get; set; }        //sat:26 -> [8]
+        public string Name { get; set; }
         public int Beam { get; set; }       //beam:44 => [9]
         public double Lat { get; set; }
         public double Lon { get; set; }     //pos=(+51.18/-068.82) -> [10]

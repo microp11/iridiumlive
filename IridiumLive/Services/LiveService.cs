@@ -38,7 +38,7 @@ namespace IridiumLive.Services
 {
     public interface ILiveService
     {
-        public Task<ICollection<LiveIra>> GetLiveIraAsync(long utcTicks);
+        public Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks);
     }
 
     public class LiveService : ILiveService
@@ -55,15 +55,20 @@ namespace IridiumLive.Services
             _optionsBuilder.UseSqlite(_connectionString);
         }
 
-        public async Task<ICollection<LiveIra>> GetLiveIraAsync(long utcTicks)
+        public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
         {
             //TODO replace with view
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
             FormattableString sqlString = $@"
                 select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
                 from Iras i
-                inner join Sats s on i.SatNo = s.SatNo";
-            return await _context.LiveIras.FromSqlInterpolated(sqlString).Where(s => s.UtcTicks > utcTicks).OrderBy(s => s.UtcTicks).AsNoTracking().ToListAsync();
+                inner join Sats s on i.SatNo = s.SatNo
+                order by i.UtcTicks";
+            return await _context.ViewIras
+                .FromSqlInterpolated(sqlString)
+                .Where(s => s.UtcTicks > utcTicks)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

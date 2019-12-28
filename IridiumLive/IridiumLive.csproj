@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Blazor.Extensions.Logging" Version="1.0.0" />
     <PackageReference Include="EntityFramework" Version="6.4.0" />
+    <PackageReference Include="MatBlazor" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.1.0-preview4.19579.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">

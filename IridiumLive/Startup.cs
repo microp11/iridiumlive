@@ -30,6 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Text;
 
 namespace IridiumLive
@@ -61,6 +62,8 @@ namespace IridiumLive
             services.AddScoped<ISatsService, SatsService>();
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<ILiveService, LiveService>();
+            services.AddScoped<IPlaybackService, PlaybackService>();
+            services.AddScoped<HttpClient>();
 
             services.AddTransient<TimerService>();
         }
