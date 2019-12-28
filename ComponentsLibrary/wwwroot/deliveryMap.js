@@ -19,12 +19,13 @@
 
             var map = elem.map;
 
-            L.circle([location.lat, location.lon], {
+            location = L.circle([location.lat, location.lon], {
                 color: location.color,
-                fillColor: '#f03',
                 fillOpacity: 0.5,
-                radius: 50
-            }).addTo(map);
+                radius: 50,
+                id: 'location'
+            });
+            map.addLayer(location);
 
             if (map.addedMarkers.length !== markers.length) {
                 // Markers have changed, so reset
@@ -64,24 +65,33 @@
             }
 
             var map = elem.map;
+            var layerGroup = L.layerGroup().addTo(map);
+
             markers.forEach(setMarker);
 
             function setMarker(m, index, array) {
-                //L.marker([m.lat, m.lon]).addTo(map);
-                L.circle([m.lat, m.lon], {
+                marker = L.circle([m.lat, m.lon], {
                     color: m.color,
-                    fillColor: '#f03',
                     fillOpacity: 0.5,
-                    radius: 50
-                }).addTo(map);
+                    radius: 50,
+                    id: 'marker'
+                });
+                layerGroup.addLayer(marker);
+            }
+        },
+
+        clearMarkers: function (elementId, location) {
+            var elem = document.getElementById(elementId);
+            if (!elem) {
+                throw new Error('No element with ID ' + elementId);
             }
 
-            //markers.forEach((marker, index) => {
-            //    animateMarkerMove(
-            //        map.addedMarkers[index].setPopupContent(marker.description),
-            //        marker,
-            //        4000);
-            //});
+            var map = elem.map;
+            map.eachLayer(function (layer) {
+                if (layer.options.id === 'marker') {
+                    map.removeLayer(layer);
+                }
+            });
         }
     };
 
