@@ -61,7 +61,7 @@ else
         //to gain the reference to liveMap we need to render the page at least once
         if (liveMap != null)
         {
-            await liveMap.ClearMarkers(location);
+            await liveMap.ClearMarkers();
         }
 
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
@@ -79,6 +79,9 @@ else
                     m.Lat = record.Lat;
                     m.Lon = record.Lon;
                     m.Color = ILColors.ILColor(record.Alt, record.Quality);
+                    m.SatNo = record.SatNo;
+                    m.Alt = record.Alt;
+                    m.Quality = record.Quality;
                     coloredMarkers.Add(m);
                 }
 

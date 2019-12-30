@@ -13,7 +13,7 @@
 </div>
 <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
 
-@if (viewIras == null || liveMap == null)
+@if (viewIras == null || liveMap == null || oldViewIras == null)
 {
     <p>Awaiting for data...</p>
 }
@@ -42,7 +42,7 @@ else
             <td>@context.Quality %</td>
             <td>@context.Beam</td>
             <td>@context.Lat N @context.Lon E</td>
-            <td>@string.Format("{0} km", context.Alt);</td>
+            <td>@string.Format("{0} km", context.Alt)</td>
         </MatTableRow>
     </MatTable>
 }
@@ -60,7 +60,7 @@ else
     {
         if (firstRender)
         {
-            lastUtcTicks = DateTimeOffset.Now.AddSeconds(-10).UtcTicks;
+            lastUtcTicks = DateTimeOffset.Now.AddSeconds(-15).UtcTicks;
             SetLocation(location);
         }
         StartTimer(interval);
@@ -89,7 +89,13 @@ else
             viewIras = await liveService.GetLiveIraAsync(lastUtcTicks);
             if (oldViewIras == null)
             {
-                oldViewIras = viewIras;
+                if (viewIras != null)
+                {
+                    if (viewIras.Count > 0)
+                    {
+                        oldViewIras = viewIras;
+                    }
+                }
             }
             var liveira = viewIras.LastOrDefault();
             if (liveira != null)
@@ -102,6 +108,9 @@ else
                     m.Lat = record.Lat;
                     m.Lon = record.Lon;
                     m.Color = ILColors.ILColor(record.Alt, record.Quality);
+                    m.SatNo = record.SatNo;
+                    m.Alt = record.Alt;
+                    m.Quality = record.Quality;
                     coloredMarkers.Add(m);
                 }
 

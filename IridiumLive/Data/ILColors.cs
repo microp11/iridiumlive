@@ -58,9 +58,9 @@ namespace IridiumLive.Data
                 switch ((int)quality)
                 {
                     case 100:
-                        return "#FF0000";
-                    case 99:
                         return "#B22222";
+                    case 99:
+                        return "#FF0000";
                     case 98:
                         return "#DC143C";
                     case 97:

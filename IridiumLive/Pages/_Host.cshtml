@@ -18,8 +18,7 @@
 </head>
 <body>
     <app>
-        @*Cannot do ServerPrerendered because of the current implementation of the polling mechanism.*@
-        <component type="typeof(App)" render-mode="ServerPrerendered" />
+        <component type="typeof(App)" render-mode="Server" />
     </app>
 
     <div id="blazor-error-ui">
@@ -34,8 +33,9 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/ComponentsLibrary/deliveryMap.js"></script>
     <script src="_content/ComponentsLibrary/leaflet/leaflet.js"></script>
     <script src="_content/MatBlazor/dist/matBlazor.js"></script>
+    <script src="_content/ComponentsLibrary/leaflet-corridor.js"></script>
+    <script src="_content/ComponentsLibrary/deliveryMap.js"></script>
 </body>
 </html>

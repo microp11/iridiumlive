@@ -11,5 +11,8 @@
         public string Color { get; set; }
 
         public bool ShowPopup { get; set; }
+        public int SatNo { get; set; }
+        public double Alt { get; set; }
+        public double Quality { get; set; }
     }
 }

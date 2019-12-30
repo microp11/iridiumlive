@@ -141,6 +141,11 @@ app {
     color: fuchsia;
 }
 
+.route-corridor {
+    stroke: #000000;
+    stroke-opacity: 0.1;
+}
+
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
         display: none;

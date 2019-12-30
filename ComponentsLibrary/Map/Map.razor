@@ -45,7 +45,7 @@
         catch { }
     }
 
-    public async Task ClearMarkers(Marker location)
+    public async Task ClearMarkers()
     {
         if (!renderAllowed)
         {
@@ -56,8 +56,7 @@
         {
             await JSRuntime.InvokeVoidAsync(
             "deliveryMap.clearMarkers",
-            elementId,
-            location);
+            elementId);
         }
         catch { }
     }
