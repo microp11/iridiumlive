@@ -6,12 +6,35 @@
 <p class="iridium-live-version">@getVersion()</p>
 
 <hr />
-<p>This is pre-release software. Issues and crashes are to be expected.</p>
-<p>Please log issues or comments at: <a href="https://github.com/microp11/iridiumlive/issues">microp11/iridiumlive/issues</a></p>
+<p>This is pre-release software. Issues, crashes, things that are not quite right... they all might be around.</p>
+<p>Please log issues or comments at: <a href="https://github.com/microp11/iridiumlive/issues" target="_blank">microp11/iridiumlive/issues</a></p>
+
+<hr />
+<h3>To do:</h3>
+<ul>
+    <li>Sats
+        <ul>
+            <li>Load button from github for the current sats name and more info about them</li>
+            <li>Inline editing</li>
+        </ul>
+    </li>
+    <li>Stats
+        <ul>
+            <li>Add histograms, quality based</li>
+        </ul>
+    </li>
+    <li>Live
+        <ul>
+            <li>Fix and enable sat corridors</li>
+            <li>Replace sat with its name</li>
+            <li>Add more info to popups and make them easier to be clicked on</li>
+            <li>Either fix heat map colors or make them user editable through xml</li>
+        </ul>
+    </li>
+
+</ul>
 
 @code {
-    private string version;
-
     string getVersion()
     {
         Assembly currentAssembly = Assembly.GetEntryAssembly();

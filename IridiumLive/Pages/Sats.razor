@@ -10,26 +10,32 @@
 
 @if (sats == null)
 {
-    <p>Loading...</p>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
 }
 else
 {
-    <MatTable Items="@sats">
-        <MatTableHeader>
-            <th>Sat</th>
-            <th>Name</th>
-            <th>Notes</th>
-            <th>@satCount</th>
-        </MatTableHeader>
-        <MatTableRow>
-            <td>@context.SatNo</td>
-            <td>@context.Name</td>
-            <td>@context.Notes</td>
-            <td>
-                <a href='/editsat/@context.Id'>Edit</a>
-            </td>
-        </MatTableRow>
-    </MatTable>
+    <RadzenDataList WrapItems="true" AllowPaging="true" Data="@sats" TItem="Sat">
+        <Template Context="sat">
+            <RadzenCard Style="width:300px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div>Sat:</div>
+                        <b>@sat.SatNo</b>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Name:</div>
+                        <b>@string.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", @sat.Name)</b>
+                    </div>
+                    <div class="col-lg" style="margin-top: 6px;">
+                        <div>Notes:</div>
+                        <b>@sat.Notes</b>
+                        <hr />
+                        <a href='/editsat/@sat.Id'>Edit</a>
+                    </div>
+                </div>
+            </RadzenCard>
+        </Template>
+    </RadzenDataList>
 }
 
 @code {

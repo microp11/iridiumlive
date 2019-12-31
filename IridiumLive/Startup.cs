@@ -63,7 +63,6 @@ namespace IridiumLive
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<ILiveService, LiveService>();
             services.AddScoped<IPlaybackService, PlaybackService>();
-            services.AddScoped<HttpClient>();
 
             services.AddTransient<TimerService>();
         }

@@ -12,28 +12,32 @@
     <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
 </div>
 <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
-<MatDatePicker Label="From" Enable24hours="true" Format="MM/dd/yy HH:mm" @bind-Value="FromValue" EnableTime="true"></MatDatePicker>
-<MatDatePicker Label="To" Enable24hours="true" Format="MM/dd/yy HH:mm" @bind-Value="ToValue" EnableTime="true"></MatDatePicker>
-<MatButton Outlined="true" @onclick="LoadDataAsync">Load</MatButton>
+<RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="FromValue" DateFormat="MM/dd/yyyy HH:mm" />
+<RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="ToValue" DateFormat="MM/dd/yyyy HH:mm" />
+<RadzenButton Click="@LoadDataAsync" Icon="replay" Text="Load" ButtonStyle="ButtonStyle.Secondary" Style="position: relative; top: -1px;" />
 
 @if (stats == null || stats.Count == 0)
 {
-    <p>Make your selection...</p>
+    @if (progressbar)
+    {
+        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
+    }
+    else
+    {
+        <p></p>
+        <p>Make your selection...</p>
+    }
 }
 else
 {
-    <MatTable Items="@stats">
-        <MatTableHeader>
-            <th>Sat</th>
-            <th>Ring alerts</th>
-            <th>Broadcasts</th>
-        </MatTableHeader>
-        <MatTableRow>
-            <td>@context.SatNo</td>
-            <td>@context.Iras</td>
-            <td>@context.Ibcs</td>
-        </MatTableRow>
-    </MatTable>
+    <p></p>
+    <RadzenGrid AllowPaging="true" Data="@stats" TItem="Stat">
+        <Columns>
+            <RadzenGridColumn TItem="Stat" Property="SatNo" Title="Sat" />
+            <RadzenGridColumn TItem="Stat" Property="Iras" Title="Ring alerts" />
+            <RadzenGridColumn TItem="Stat" Property="Ibcs" Title="Broadcasts" />
+        </Columns>
+    </RadzenGrid>
 }
 
 @code {
@@ -43,9 +47,10 @@ else
     private ICollection<ViewIra> playbackIras;
     private ICollection<Stat> stats;
     private Map liveMap;
+    private bool progressbar = false;
 
-    public DateTime FromValue { get; set; } = DateTime.Now.AddMinutes(-10).ToLocalTime();
-    public DateTime ToValue { get; set; } = DateTime.Now.ToLocalTime();
+    public DateTime FromValue { get; set; } = DateTime.SpecifyKind(DateTime.Now.AddMinutes(-10), DateTimeKind.Local);
+    public DateTime ToValue { get; set; } = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Local);
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -64,10 +69,24 @@ else
             await liveMap.ClearMarkers();
         }
 
+        //display the progress bar
+        try
+        {
+            progressbar = true;
+            stats = null;
+            StateHasChanged();
+        }
+        finally
+        {
+            progressbar = false;
+        }
+
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
         {
-            playbackIras = await playbackService.GetViewIraAsync(FromValue.ToLocalTime(), ToValue.ToLocalTime());
+            FromValue = SetKind(FromValue, DateTimeKind.Local);
+            ToValue = SetKind(ToValue, DateTimeKind.Local);
+            playbackIras = await playbackService.GetViewIraAsync(FromValue, ToValue);
             var playbackira = playbackIras.LastOrDefault();
             if (playbackira != null)
             {
@@ -116,5 +135,11 @@ else
     void Click(EventArgs e)
     {
         ButtonState = "Clicked";
+    }
+
+    public static DateTime SetKind(DateTime DT, DateTimeKind DTKind)
+    {
+        var NewDT = new DateTime(DT.Year, DT.Month, DT.Day, DT.Hour, DT.Minute, DT.Second, DT.Millisecond, DTKind);
+        return NewDT;
     }
 }   

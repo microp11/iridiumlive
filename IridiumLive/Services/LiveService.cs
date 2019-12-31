@@ -55,20 +55,44 @@ namespace IridiumLive.Services
             _optionsBuilder.UseSqlite(_connectionString);
         }
 
+        /// <summary>
+        /// If the utcTicks is zero, returns the last point. This fixes an issue that has to do with time ang gr-iridium.
+        /// </summary>
+        /// <param name="utcTicks"></param>
+        /// <returns></returns>
         public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
         {
-            //TODO replace with view
+            //TODO replace with view and write this properly
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
-            FormattableString sqlString = $@"
+            FormattableString sqlString;
+            if (utcTicks == 0)
+            {
+                sqlString = $@"
+                    select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
+                    from Iras i
+                    inner join Sats s on i.SatNo = s.SatNo
+                    order by i.UtcTicks desc
+                    limit 1";
+                
+                return await _context.ViewIras
+                    .FromSqlInterpolated(sqlString)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                sqlString = $@"
                 select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
                 from Iras i
                 inner join Sats s on i.SatNo = s.SatNo
-                order by i.UtcTicks";
-            return await _context.ViewIras
-                .FromSqlInterpolated(sqlString)
-                .Where(s => s.UtcTicks > utcTicks)
-                .AsNoTracking()
-                .ToListAsync();
+                order by i.UtcTicks"; 
+                
+                return await _context.ViewIras
+                    .FromSqlInterpolated(sqlString)
+                    .Where(s => s.UtcTicks > utcTicks)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
         }
     }
 }

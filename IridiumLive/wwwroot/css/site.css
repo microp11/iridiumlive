@@ -146,6 +146,10 @@ app {
     stroke-opacity: 0.1;
 }
 
+.ui-progressbar-indeterminate.ui-progressbar-2 {
+    height: 2px;
+}
+
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
         display: none;

@@ -15,7 +15,7 @@
 
 @if (viewIras == null || liveMap == null || oldViewIras == null)
 {
-    <p>Awaiting for data...</p>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
 }
 else
 {
@@ -27,24 +27,29 @@ else
     {
         oldViewIras = viewIras;
     }
-    <MatTable Items="@viewIras">
-        <MatTableHeader>
-            <th>Sat</th>
-            <th>Time</th>
-            <th>Quality</th>
-            <th>Beam</th>
-            <th>Coordinates</th>
-            <th>Altitude</th>
-        </MatTableHeader>
-        <MatTableRow>
-            <td>@context.Name</td>
-            <td>@context.Time</td>
-            <td>@context.Quality %</td>
-            <td>@context.Beam</td>
-            <td>@context.Lat N @context.Lon E</td>
-            <td>@string.Format("{0} km", context.Alt)</td>
-        </MatTableRow>
-    </MatTable>
+
+    <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
+        <Columns>
+            <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
+            <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
+            <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
+                <Template Context="context">
+                    @context.Quality %
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
+            <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
+                <Template Context="context">
+                    @context.Lat N @context.Lon E
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="ViewIra" Title="Altitude">
+                <Template Context="context">
+                    @string.Format("{0} km", context.Alt)
+                </Template>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
 }
 
 @code {
@@ -60,7 +65,7 @@ else
     {
         if (firstRender)
         {
-            lastUtcTicks = DateTimeOffset.Now.AddSeconds(-15).UtcTicks;
+            lastUtcTicks = 0;
             SetLocation(location);
         }
         StartTimer(interval);

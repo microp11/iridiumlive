@@ -12,22 +12,17 @@
 
 @if (stats == null)
 {
-    <p>Loading...</p>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
 }
 else
 {
-    <MatTable Items="@stats">
-        <MatTableHeader>
-            <th>Sat</th>
-            <th>Ring alerts</th>
-            <th>Broadcasts</th>
-        </MatTableHeader>
-        <MatTableRow>
-            <td>@context.SatNo</td>
-            <td>@context.Iras</td>
-            <td>@context.Ibcs</td>
-        </MatTableRow>
-    </MatTable>
+    <RadzenGrid AllowPaging="true" Data="@stats" TItem="Stat">
+        <Columns>
+            <RadzenGridColumn TItem="Stat" Property="SatNo" Title="Sat" />
+            <RadzenGridColumn TItem="Stat" Property="Iras" Title="Ring alerts" />
+            <RadzenGridColumn TItem="Stat" Property="Ibcs" Title="Broadcasts" />
+        </Columns>
+    </RadzenGrid>
 }
 
 @code {

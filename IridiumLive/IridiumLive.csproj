@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyVersion>1.0.0.*</AssemblyVersion>
+    <AssemblyVersion>1.1.0.*</AssemblyVersion>
     <Deterministic>false</Deterministic>
     <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.0.0.0</Version>
+    <Version>1.1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Blazor.Extensions.Logging" Version="1.0.0" />
     <PackageReference Include="EntityFramework" Version="6.4.0" />
-    <PackageReference Include="MatBlazor" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.1.0-preview4.19579.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Analyzers" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +23,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
+    <PackageReference Include="Radzen.Blazor" Version="2.0.13" />
   </ItemGroup>
 
   <ItemGroup>
