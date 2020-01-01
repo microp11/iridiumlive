@@ -64,7 +64,7 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 This is my first .NET Core web app. Blazor on top of it. Be gentle!
 
 <p align="center">
-  <img alt="Screenshot" style="max-width:100%;" src="prerelease1.png">
+  <img alt="Screenshot" style="max-width:100%;" src="prerelease1.jpg">
 </p>
 
 #### Quick install on gr-iridium and iridium-toolkit for Rapberry Pi
