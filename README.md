@@ -10,6 +10,8 @@ You install the application in your local network, and use the browser to intera
 
 #### Setup
 
+Binaries: [https://github.com/microp11/iridiumlive/releases](https://github.com/microp11/iridiumlive/releases)
+
 At this time the following ports have been hard coded:
 ```
  7777: IridiumLive server port,
@@ -61,7 +63,7 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 
 #### Disclaimer
 
-This is my first .NET Core web app. Blazor on top of it. Be gentle!
+This is my first .NET Core web app. Blazor on top of it. Be merciless and gentle!
 
 <p align="center">
   <img alt="Screenshot" style="max-width:100%;" src="prerelease1.jpg">
