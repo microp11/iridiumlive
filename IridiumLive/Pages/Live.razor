@@ -8,6 +8,11 @@
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
 
+<div class="live-layout-buttons">
+    <RadzenButton Click="@SitOnTop" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
+    @*<RadzenButton Click="@SideBySideAsync" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>*@
+</div>
+
 <div class="track-order-map">
     <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
 </div>
@@ -15,7 +20,7 @@
 
 @if (viewIras == null || liveMap == null || oldViewIras == null)
 {
-    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
 }
 else
 {
@@ -59,7 +64,7 @@ else
     private ICollection<ViewIra> viewIras, oldViewIras;
     private long lastUtcTicks;
     private Map liveMap;
-    private const int interval = 1000;
+    private const int interval = 10000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -142,5 +147,16 @@ else
         location.Lat = 46.2382;
         location.Lon = -63.1311;
         location.Color = "green";
+    }
+
+    private void SitOnTop()
+    {
+        //use toggle instead of 2 buttons - vertical grouping
+        
+    }
+
+    private void SideBySide()
+    {
+        //horohontal grouping
     }
 }   

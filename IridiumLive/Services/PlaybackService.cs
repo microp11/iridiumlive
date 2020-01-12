@@ -1,9 +1,29 @@
-﻿using IridiumLive.Data;
+﻿/*
+ * microp11 2020
+ * 
+ * This file is part of IridiumLive.
+ * 
+ * IridiumLive is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * IridiumLive is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with IridiumLive.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ */
+
+using IridiumLive.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IridiumLive.Services
@@ -13,19 +33,9 @@ namespace IridiumLive.Services
         public Task<ICollection<ViewIra>> GetViewIraAsync(DateTime from, DateTime to);
     }
     
-    public class PlaybackService : IPlaybackService
+    public class PlaybackService : IridiumService, IPlaybackService
     {
-        private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
-        readonly DbContextOptionsBuilder<IridiumLiveDbContext> _optionsBuilder;
-
-        public PlaybackService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            _optionsBuilder = new DbContextOptionsBuilder<IridiumLiveDbContext>();
-            _connectionString = _configuration.GetConnectionString("Sqlite");
-            _optionsBuilder.UseSqlite(_connectionString);
-        }
+        public PlaybackService(IConfiguration configuration) : base(configuration) { }
 
         public async Task<ICollection<ViewIra>> GetViewIraAsync(DateTime from, DateTime to)
         {
@@ -39,7 +49,7 @@ namespace IridiumLive.Services
             long toUtcTicks = toOffset.UtcTicks;
 
             //TODO replace with view
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
             FormattableString sqlString = $@"
                 select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
                 from Iras i

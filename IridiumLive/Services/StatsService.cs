@@ -35,23 +35,13 @@ namespace IridiumLive.Services
         public Task<ICollection<Stat>> GetStatsAsync(DateTime from, DateTime to);
     }
 
-    public class StatsService : IStatsService
+    public class StatsService : IridiumService, IStatsService
     {
-        private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
-        readonly DbContextOptionsBuilder<IridiumLiveDbContext> _optionsBuilder;
-
-        public StatsService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            _optionsBuilder = new DbContextOptionsBuilder<IridiumLiveDbContext>();
-            _connectionString = _configuration.GetConnectionString("Sqlite");
-            _optionsBuilder.UseSqlite(_connectionString);
-        }
+        public StatsService(IConfiguration configuration) : base(configuration) { }
 
         public async Task<ICollection<Stat>> GetStatsAsync()
         {
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
             FormattableString sqlString = $@"
                 select s.SatNo, IFNUll(x.Count, 0) Iras, IFNULL(y.Count, 0) Ibcs 
                 from Sats s
@@ -75,7 +65,7 @@ namespace IridiumLive.Services
             DateTimeOffset toOffset = new DateTimeOffset(to);
             long toUtcTicks = toOffset.UtcTicks;
 
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
             FormattableString sqlString = $@"
                 select s.SatNo, IFNUll(x.Count, 0) Iras, IFNULL(y.Count, 0) Ibcs 
                 from Sats s

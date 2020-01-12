@@ -136,20 +136,6 @@ app {
     top: 0.5rem;
 }
 
-.iridium-live-version {
-    font-size: small;
-    color: fuchsia;
-}
-
-.route-corridor {
-    stroke: #000000;
-    stroke-opacity: 0.1;
-}
-
-.ui-progressbar-indeterminate.ui-progressbar-2 {
-    height: 2px;
-}
-
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
         display: none;

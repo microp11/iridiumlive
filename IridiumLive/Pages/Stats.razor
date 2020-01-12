@@ -12,7 +12,7 @@
 
 @if (stats == null)
 {
-    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
 }
 else
 {
@@ -28,7 +28,7 @@ else
 @code {
     private ICollection<Stat> stats;
     private string latestUpdate;
-    private const int interval = 1000;
+    private const int interval = 5000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

@@ -10,7 +10,7 @@
 
 @if (sats == null)
 {
-    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
 }
 else
 {
@@ -42,7 +42,7 @@ else
     private ICollection<Sat> sats;
     private string latestUpdate;
     private int satCount = 0;
-    private const int interval = 1000;
+    private const int interval = 3000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

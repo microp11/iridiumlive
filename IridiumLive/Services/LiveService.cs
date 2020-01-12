@@ -41,19 +41,9 @@ namespace IridiumLive.Services
         public Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks);
     }
 
-    public class LiveService : ILiveService
+    public class LiveService : IridiumService, ILiveService
     {
-        private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
-        readonly DbContextOptionsBuilder<IridiumLiveDbContext> _optionsBuilder;
-
-        public LiveService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            _optionsBuilder = new DbContextOptionsBuilder<IridiumLiveDbContext>();
-            _connectionString = _configuration.GetConnectionString("Sqlite");
-            _optionsBuilder.UseSqlite(_connectionString);
-        }
+        public LiveService(IConfiguration configuration) : base(configuration) { }
 
         /// <summary>
         /// If the utcTicks is zero, returns the last point. This fixes an issue that has to do with time ang gr-iridium.
@@ -63,7 +53,7 @@ namespace IridiumLive.Services
         public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
         {
             //TODO replace with view and write this properly
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(_optionsBuilder.Options);
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
             FormattableString sqlString;
             if (utcTicks == 0)
             {

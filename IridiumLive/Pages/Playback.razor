@@ -14,13 +14,13 @@
 <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
 <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="FromValue" DateFormat="MM/dd/yyyy HH:mm" />
 <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="ToValue" DateFormat="MM/dd/yyyy HH:mm" />
-<RadzenButton Click="@LoadDataAsync" Icon="replay" Text="Load" ButtonStyle="ButtonStyle.Secondary" Style="position: relative; top: -1px;" />
+<RadzenButton Click="@LoadDataAsync" Icon="replay" Text="Load" ButtonStyle="ButtonStyle.Secondary" class="il-button-playback" />
 
 @if (stats == null || stats.Count == 0)
 {
     @if (progressbar)
     {
-        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="ui-progressbar-2" />
+        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
     }
     else
     {
