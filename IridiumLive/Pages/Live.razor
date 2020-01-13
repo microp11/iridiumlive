@@ -8,56 +8,121 @@
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
 
-<div class="live-layout-buttons">
-    <RadzenButton Click="@SitOnTop" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
-    @*<RadzenButton Click="@SideBySideAsync" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>*@
-</div>
-
-<div class="track-order-map">
-    <Map Zoom="4" Location="location" Markers="markers" @ref="liveMap" />
-</div>
-<p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
-
-@if (viewIras == null || liveMap == null || oldViewIras == null)
+@*this is totally not the most elegant solution but for someone who does not know css would do.*@
+@if (!sideBySideView)
 {
-    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
-}
-else
-{
-    if (viewIras.Count == 0)
+    <div class="live-layout-buttons">
+        <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
+    </div>
+
+    <div class="track-order-map">
+        <Map Zoom="4" Location="location" Markers="markers" IsSideBySide="false" @ref="liveMap" />
+    </div>
+    <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
+
+    @if (viewIras == null || liveMap == null || oldViewIras == null)
     {
-        viewIras = oldViewIras;
+        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
     }
     else
     {
-        oldViewIras = viewIras;
-    }
+        if (viewIras.Count == 0)
+        {
+            viewIras = oldViewIras;
+        }
+        else
+        {
+            oldViewIras = viewIras;
+        }
 
-    <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
-        <Columns>
-            <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
-            <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
-            <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
-                <Template Context="context">
-                    @context.Quality %
-                </Template>
-            </RadzenGridColumn>
-            <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
-            <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
-                <Template Context="context">
-                    @context.Lat N @context.Lon E
-                </Template>
-            </RadzenGridColumn>
-            <RadzenGridColumn TItem="ViewIra" Title="Altitude">
-                <Template Context="context">
-                    @string.Format("{0} km", context.Alt)
-                </Template>
-            </RadzenGridColumn>
-        </Columns>
-    </RadzenGrid>
+        <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
+            <Columns>
+                <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
+                <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
+                <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
+                    <Template Context="context">
+                        @context.Quality %
+                    </Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
+                <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
+                    <Template Context="context">
+                        @context.Lat N @context.Lon E
+                    </Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="ViewIra" Title="Altitude">
+                    <Template Context="context">
+                        @string.Format("{0} km", context.Alt)
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+    }
+}
+else
+{
+    <div class="live-layout-buttons">
+        <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-7 pl-0">
+
+                <div class="track-order-map">
+                    <Map Zoom="4" Location="location" IsSideBySide="true" Markers="markers" @ref="liveMap" />
+                </div>
+                <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
+
+            </div>
+            <div class="col-5 pr-0">
+
+                @if (viewIras == null || liveMap == null || oldViewIras == null)
+                {
+                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
+                }
+                else
+                {
+                    if (viewIras.Count == 0)
+                    {
+                        viewIras = oldViewIras;
+                    }
+                    else
+                    {
+                        oldViewIras = viewIras;
+                    }
+
+                    <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
+                        <Columns>
+                            <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
+                            <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
+                            <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
+                                <Template Context="context">
+                                    @context.Quality %
+                                </Template>
+                            </RadzenGridColumn>
+                            <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
+                            <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
+                                <Template Context="context">
+                                    @context.Lat N @context.Lon E
+                                </Template>
+                            </RadzenGridColumn>
+                            <RadzenGridColumn TItem="ViewIra" Title="Altitude">
+                                <Template Context="context">
+                                    @string.Format("{0} km", context.Alt)
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+                    </RadzenGrid>
+                }
+
+            </div>
+        </div>
+    </div>
 }
 
 @code {
+    private bool sideBySideView = false;
     private string latestUpdate;
     private Marker location = new Marker();
     private List<Marker> markers = new List<Marker>();
@@ -108,6 +173,7 @@ else
                 }
             }
             var liveira = viewIras.LastOrDefault();
+
             if (liveira != null)
             {
                 //at least one marker can be extracted
@@ -149,14 +215,9 @@ else
         location.Color = "green";
     }
 
-    private void SitOnTop()
+    private void ToggleHVView()
     {
-        //use toggle instead of 2 buttons - vertical grouping
-        
-    }
-
-    private void SideBySide()
-    {
-        //horohontal grouping
+        sideBySideView = !sideBySideView;
+        StateHasChanged();
     }
 }   

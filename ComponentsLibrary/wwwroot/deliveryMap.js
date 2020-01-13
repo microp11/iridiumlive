@@ -4,7 +4,7 @@
 
     // Global export
     window.deliveryMap = {
-        showOrUpdate: function (elementId, location, zoom, markers) {
+        showOrUpdate: function (elementId, location, zoom, isSideBySide) {
             var elem = document.getElementById(elementId);
             if (!elem) {
                 throw new Error('No element with ID ' + elementId);
@@ -13,7 +13,6 @@
             // Initialize map if needed
             if (!elem.map) {
                 elem.map = L.map(elementId).setView([location.lat, location.lon], zoom);
-                elem.map.addedMarkers = [];
                 L.tileLayer(tileUrl, { attribution: tileAttribution }).addTo(elem.map);
 
                 location = L.circle([location.lat, location.lon], {
@@ -25,37 +24,17 @@
                 elem.map.addLayer(location);
             }
 
-            var map = elem.map;
+            if (isSideBySide === null) {
+                return;
+            }
 
-            //if (map.addedMarkers.length !== markers.length) {
-            //    // Markers have changed, so reset
-            //    //map.addedMarkers.forEach(marker => marker.removeFrom(map));
-            //    //map.addedMarkers = markers.map(m => {
-            //    //    return L.marker([m.y, m.x]).bindPopup(m.description).addTo(map);
-            //    //});
-
-            //    //// Auto-fit the view
-            //    //var markersGroup = new L.featureGroup(map.addedMarkers);
-            //    //map.fitBounds(markersGroup.getBounds().pad(0.3));
-
-            //    //// Show applicable popups. Can't do this until after the view was auto-fitted.
-            //    //markers.forEach((marker, index) => {
-            //    //    if (marker.showPopup) {
-            //    //        map.addedMarkers[index].openPopup();
-            //    //    }
-            //    //});
-            //} else {
-            //    // Same number of markers, so update positions/text without changing view bounds
-            //    markers.forEach((marker, index) => {
-            //        animateMarkerMove(
-            //            map.addedMarkers[index].setPopupContent(marker.description),
-            //            marker,
-            //            4000);
-            //    });
-            //}
-
-            elem.style.height = window.innerHeight / 2 + "px";
-            map.invalidateSize();
+            if (!isSideBySide) {
+                elem.style.height = (window.innerHeight * 50 / 100) + "px";
+            }
+            else {
+                elem.style.height = (window.innerHeight * 70 / 100) + "px";
+            }
+            elem.map.invalidateSize();
         },
 
         renderMarkers: function (elementId, markers) {

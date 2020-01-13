@@ -9,6 +9,7 @@
     [Parameter] public double Zoom { get; set; }
     [Parameter] public Marker Location { get; set; }
     [Parameter] public List<Marker> Markers { get; set; }
+    [Parameter] public bool IsSideBySide { get; set; }
 
     bool renderAllowed = false;
 
@@ -21,7 +22,7 @@
             elementId,
             Location,
             Zoom,
-            Markers);
+            IsSideBySide);
 
             renderAllowed = true;
         }
@@ -60,5 +61,4 @@
         }
         catch { }
     }
-
 }
