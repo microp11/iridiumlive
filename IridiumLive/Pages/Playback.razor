@@ -52,6 +52,49 @@ else
     <div class="live-layout-buttons">
         <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>
     </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-7 pl-0">
+
+                <div class="track-order-map">
+                    <Map Zoom="4" Location="location" Markers="markers" IsSideBySide="true" @ref="liveMap" />
+                </div>
+
+                <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
+            </div>
+            <div class="col-5 pr-0">
+
+                @if (stats == null || stats.Count == 0)
+                {
+                    @if (progressbar)
+                    {
+                        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
+                    }
+                    else
+                    {
+                        <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="FromValue" DateFormat="MM/dd/yyyy HH:mm" />
+                        <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="ToValue" DateFormat="MM/dd/yyyy HH:mm" />
+                        <RadzenButton Click="@LoadDataAsync" Icon="play_arrow" ButtonStyle="ButtonStyle.Secondary" class="il-button-playback" />
+                        <p></p>
+                        <p>Make your selection...</p>
+                    }
+                }
+                else
+                {
+                    <p></p>
+                    <RadzenGrid AllowPaging="true" Data="@stats" TItem="Stat">
+                        <Columns>
+                            <RadzenGridColumn TItem="Stat" Property="SatNo" Title="Sat" />
+                            <RadzenGridColumn TItem="Stat" Property="Iras" Title="Ring alerts" />
+                            <RadzenGridColumn TItem="Stat" Property="Ibcs" Title="Broadcasts" />
+                        </Columns>
+                    </RadzenGrid>
+                }
+
+            </div>
+        </div>
+    </div>
 }
 
 @code {
