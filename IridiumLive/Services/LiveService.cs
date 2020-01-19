@@ -52,10 +52,11 @@ namespace IridiumLive.Services
         }
 
         /// <summary>
-        /// If the utcTicks is zero, returns the most recent record. This fixes an issue that has to do with time and gr-iridium.
+        /// If the utcTicks is zero, returns the most recent record.
+        /// The returned records are in descending order. Important!
         /// </summary>
         /// <param name="utcTicks"></param>
-        /// <returns>The returned records are in descending order. Important!</returns>
+        /// <returns></returns>
         public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
         {
             sw.Reset();

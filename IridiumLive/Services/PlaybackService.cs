@@ -48,7 +48,8 @@ namespace IridiumLive.Services
         {
             sw.Reset();
             sw.Start();
-            //this should be changed fundamentally, no need for these conversions
+
+            //this should be changed, no need for these conversions
             from = DateTime.SpecifyKind(from, DateTimeKind.Local);
             DateTimeOffset fromOffset = new DateTimeOffset(from);
             long fromUtcTicks = fromOffset.UtcTicks;
@@ -57,7 +58,6 @@ namespace IridiumLive.Services
             DateTimeOffset toOffset = new DateTimeOffset(to);
             long toUtcTicks = toOffset.UtcTicks;
 
-            //TODO replace with view
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
             var x = await _context.ViewIras
                 .Where(s => s.UtcTicks >= fromUtcTicks && s.UtcTicks <= toUtcTicks)

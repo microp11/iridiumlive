@@ -25,6 +25,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace IridiumLive.Services
 {
+    
+    ///Provide an easy way to create a new database context in any child class through the protected Options member.
     public class IridiumService
     {
         private readonly IConfiguration _configuration;
