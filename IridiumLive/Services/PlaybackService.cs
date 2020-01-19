@@ -25,6 +25,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Diagnostics;
 
 namespace IridiumLive.Services
 {
@@ -35,10 +37,17 @@ namespace IridiumLive.Services
     
     public class PlaybackService : IridiumService, IPlaybackService
     {
-        public PlaybackService(IConfiguration configuration) : base(configuration) { }
+        private readonly Stopwatch sw;
+        public PlaybackService(IConfiguration configuration) : base(configuration)
+        {
+            sw = new Stopwatch();
+
+        }
 
         public async Task<ICollection<ViewIra>> GetViewIraAsync(DateTime from, DateTime to)
         {
+            sw.Reset();
+            sw.Start();
             //this should be changed fundamentally, no need for these conversions
             from = DateTime.SpecifyKind(from, DateTimeKind.Local);
             DateTimeOffset fromOffset = new DateTimeOffset(from);
@@ -50,16 +59,15 @@ namespace IridiumLive.Services
 
             //TODO replace with view
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
-            FormattableString sqlString = $@"
-                select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
-                from Iras i
-                inner join Sats s on i.SatNo = s.SatNo
-                where i.Utcticks >= {fromUtcTicks} and i.UtcTicks <= {toUtcTicks}
-                order by i.UtcTicks";
-            return await _context.ViewIras
-                .FromSqlInterpolated(sqlString)
+            var x = await _context.ViewIras
+                .Where(s => s.UtcTicks >= fromUtcTicks && s.UtcTicks <= toUtcTicks)
+                .OrderBy(s => s.UtcTicks)
                 .AsNoTracking()
                 .ToListAsync();
+            sw.Stop();
+            Console.WriteLine("Playback result in: {0} ms.", sw.ElapsedMilliseconds);
+            return x;
+
         }
     }
 }

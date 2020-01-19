@@ -31,6 +31,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,45 +44,45 @@ namespace IridiumLive.Services
 
     public class LiveService : IridiumService, ILiveService
     {
-        public LiveService(IConfiguration configuration) : base(configuration) { }
+        private readonly Stopwatch sw;
+
+        public LiveService(IConfiguration configuration) : base(configuration)
+        {
+            sw = new Stopwatch();
+        }
 
         /// <summary>
-        /// If the utcTicks is zero, returns the last point. This fixes an issue that has to do with time ang gr-iridium.
+        /// If the utcTicks is zero, returns the most recent record. This fixes an issue that has to do with time and gr-iridium.
         /// </summary>
         /// <param name="utcTicks"></param>
-        /// <returns></returns>
+        /// <returns>The returned records are in descending order. Important!</returns>
         public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
         {
-            //TODO replace with view and write this properly
+            sw.Reset();
+            sw.Start();
+
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
-            FormattableString sqlString;
             if (utcTicks == 0)
             {
-                sqlString = $@"
-                    select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
-                    from Iras i
-                    inner join Sats s on i.SatNo = s.SatNo
-                    order by i.UtcTicks desc
-                    limit 1";
-                
-                return await _context.ViewIras
-                    .FromSqlInterpolated(sqlString)
+                var result0 = await _context.ViewIras
+                    .OrderByDescending(s => s.UtcTicks)
+                    .Take(1)
                     .AsNoTracking()
                     .ToListAsync();
+                sw.Stop();
+                Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
+                return result0;
             }
             else
             {
-                sqlString = $@"
-                select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
-                from Iras i
-                inner join Sats s on i.SatNo = s.SatNo
-                order by i.UtcTicks"; 
-                
-                return await _context.ViewIras
-                    .FromSqlInterpolated(sqlString)
+                var result = await _context.ViewIras
+                    .OrderByDescending(s => s.UtcTicks)
                     .Where(s => s.UtcTicks > utcTicks)
                     .AsNoTracking()
                     .ToListAsync();
+                sw.Stop();
+                Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
+                return result;
             }
         }
     }

@@ -172,7 +172,9 @@ else
                     }
                 }
             }
-            var liveira = viewIras.LastOrDefault();
+
+            //the list must arrive in descending order otherwise the time is incorrectly computed
+            var liveira = viewIras.FirstOrDefault();
 
             if (liveira != null)
             {

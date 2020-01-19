@@ -16,15 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with IridiumLive.  If not, see <http://www.gnu.org/licenses/>.
  *
- *
+ * Uses a view instead of a table: https://www.laboremus.ug/post/using-sql-views-with-entity-framework-code-first
+ * 
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IridiumLive.Data
 {
+    [Table("V_ViewIras")]
     public class ViewIra
     {
+        [Key]
         public string Id { get; set; }
         public DateTimeOffset Time { get; set; }
         public long UtcTicks { get; set; }

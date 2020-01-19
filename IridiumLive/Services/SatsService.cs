@@ -46,7 +46,10 @@ namespace IridiumLive.Services
 
     public class SatsService : IridiumService, ISatsService
     {
-        public SatsService(IConfiguration configuration) : base(configuration) { }
+        public SatsService(IConfiguration configuration) : base(configuration)
+        {
+            Console.WriteLine("Only IRA gets charted.");
+        }
 
         public async Task<ICollection<Sat>> GetSatsAsync()
         {
@@ -128,7 +131,7 @@ namespace IridiumLive.Services
 
                 if (words[0] == "IRA:")
                 {
-                    Debug.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks);
+                    Console.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks);
 
                     Ira ira = new Ira
                     {
@@ -168,6 +171,7 @@ namespace IridiumLive.Services
                 }
                 else if (words[0] == "IBC:")
                 {
+                    //Console.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks); 
                     Ibc ibc = new Ibc
                     {
                         Id = rxLine,
@@ -198,6 +202,7 @@ namespace IridiumLive.Services
                 }
                 else
                 {
+                    //Console.WriteLine("N/A: {0} {1}", satTime, utcTicks);
                     return false;
                 }
 

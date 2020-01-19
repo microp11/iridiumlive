@@ -30,7 +30,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Net.Http;
 using System.Text;
 
 namespace IridiumLive
@@ -94,6 +93,15 @@ namespace IridiumLive
                 var context = scope.ServiceProvider.GetService<IridiumLiveDbContext>();
                 //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
+
+                //this should be called in a different spot
+                context.Database.ExecuteSqlRaw(@"
+                    create view if not exists V_ViewIras as 
+                    select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
+                    from Iras i
+                    inner join Sats s on i.SatNo = s.SatNo
+                    order by i.UtcTicks desc");
+                context.SaveChanges();
                 satsService = new SatsService(Configuration);
 
                 int port = int.TryParse(Configuration["IridiumLiveSettings:UdpListeningPort"], out int i) ? i : 15007;
