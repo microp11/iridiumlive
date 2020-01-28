@@ -3,7 +3,6 @@
 @using System.Diagnostics
 
 @inject ILiveService liveService
-@inject TimerService timer
 
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
@@ -129,7 +128,6 @@ else
     private ICollection<ViewIra> viewIras, oldViewIras;
     private long lastUtcTicks;
     private Map liveMap;
-    private const int interval = 10000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -138,21 +136,11 @@ else
             lastUtcTicks = 0;
             SetLocation(location);
         }
-        StartTimer(interval);
         return base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void StartTimer(int interval)
-    {
-        timer.SetTimer(interval);
-        timer.OnElapsed -= TimerElapsedHandler;
-        timer.OnElapsed += TimerElapsedHandler;
-        //Debug.WriteLine("Timer Live Started. {0}", Thread.CurrentThread.ManagedThreadId);
     }
 
     private void TimerElapsedHandler()
     {
-        //Debug.WriteLine("Timer live Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
         InvokeAsync(async () => await ReloadOnTimer());
     }
 

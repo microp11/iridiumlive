@@ -3,7 +3,6 @@
 @using System.Diagnostics
 
 @inject ISatsService satsService
-@inject TimerService timer
 
 <h2>Satellites</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
@@ -42,25 +41,14 @@ else
     private ICollection<Sat> sats;
     private string latestUpdate;
     private int satCount = 0;
-    private const int interval = 3000;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        StartTimer(interval);
         return base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void StartTimer(int interval)
-    {
-        timer.SetTimer(interval);
-        timer.OnElapsed -= TimerElapsedHandler;
-        timer.OnElapsed += TimerElapsedHandler;
-        //Debug.WriteLine("Timer Sats Started. {0}", Thread.CurrentThread.ManagedThreadId);
     }
 
     private void TimerElapsedHandler()
     {
-        //Debug.WriteLine("Timer Sats Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
         InvokeAsync(async () => await LoadDataAsync());
     }
 

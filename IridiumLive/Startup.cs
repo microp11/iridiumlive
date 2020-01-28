@@ -21,6 +21,7 @@
 
 using BlazorUdp.Udp;
 using IridiumLive.Data;
+using IridiumLive.Hubs;
 using IridiumLive.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,7 @@ namespace IridiumLive
     {
         public IConfiguration Configuration { get; }
         private ISatsService satsService;
+        private NotificationService notificationService;
 
         public Startup(IConfiguration configuration)
         {
@@ -63,7 +65,8 @@ namespace IridiumLive
             services.AddScoped<ILiveService, LiveService>();
             services.AddScoped<IPlaybackService, PlaybackService>();
 
-            services.AddTransient<TimerService>();
+            services.AddSignalR();
+            services.AddScoped<NotificationService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -84,6 +87,7 @@ namespace IridiumLive
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapHub<NotificationHub>("/_notifications");
             });
 
             var scope = app.ApplicationServices.CreateScope();
@@ -113,6 +117,8 @@ namespace IridiumLive
             {
                 logger.LogError(ex, "Error during system startup:configuration.");
             }
+
+            notificationService = scope.ServiceProvider.GetService<NotificationService>();
         }
 
         private async void Srv_OnUDPPacket(object sender, UdpPacketArgs e)
@@ -123,6 +129,7 @@ namespace IridiumLive
                 return;
             }
             await satsService.AddRxLineAsync(rxLine);
+            await notificationService.SendNotificationAsync(rxLine);
         }
     }
 }
