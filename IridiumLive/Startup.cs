@@ -39,7 +39,7 @@ namespace IridiumLive
     {
         public IConfiguration Configuration { get; }
         private ISatsService satsService;
-        private NotificationService notificationService;
+        private INotificationService notificationService;
 
         public Startup(IConfiguration configuration)
         {
@@ -66,7 +66,7 @@ namespace IridiumLive
             services.AddScoped<IPlaybackService, PlaybackService>();
 
             services.AddSignalR();
-            services.AddScoped<NotificationService>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

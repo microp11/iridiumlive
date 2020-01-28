@@ -15,7 +15,12 @@ namespace IridiumLive.Hubs
 
     }
 
-    public class NotificationService
+    public interface INotificationService
+    {
+        public Task SendNotificationAsync(string message);
+    }
+
+    public class NotificationService : INotificationService
     {
         private readonly IHubContext<NotificationHub> _hubContext;
 
