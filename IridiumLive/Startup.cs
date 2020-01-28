@@ -118,7 +118,7 @@ namespace IridiumLive
                 logger.LogError(ex, "Error during system startup:configuration.");
             }
 
-            notificationService = scope.ServiceProvider.GetService<NotificationService>();
+            notificationService = scope.ServiceProvider.GetService<INotificationService>();
         }
 
         private async void Srv_OnUDPPacket(object sender, UdpPacketArgs e)
