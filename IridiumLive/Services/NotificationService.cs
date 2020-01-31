@@ -7,6 +7,8 @@
  
 using IridiumLive.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace IridiumLive.Services
@@ -27,7 +29,14 @@ namespace IridiumLive.Services
 
         public async Task SendNotificationAsync(string message)
         {
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
     }
 }

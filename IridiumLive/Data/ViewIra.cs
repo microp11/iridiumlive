@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with IridiumLive.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Uses a view instead of a table: https://www.laboremus.ug/post/using-sql-views-with-entity-framework-code-first
+ * Uses a view instead of a table:
+ * https://www.laboremus.ug/post/using-sql-views-with-entity-framework-code-first
+ * https://docs.microsoft.com/en-ca/ef/core/modeling/keyless-entity-types
  * 
  */
 
@@ -34,11 +36,11 @@ namespace IridiumLive.Data
         public DateTimeOffset Time { get; set; }
         public long UtcTicks { get; set; }
         public int Quality { get; set; }
-        public int SatNo { get; set; }        //sat:26 -> [8]
+        public int SatNo { get; set; }
         public string Name { get; set; }
-        public int Beam { get; set; }       //beam:44 => [9]
+        public int Beam { get; set; }
         public double Lat { get; set; }
-        public double Lon { get; set; }     //pos=(+51.18/-068.82) -> [10]
-        public double Alt { get; set; }     //alt=796 -> [11]
+        public double Lon { get; set; }
+        public double Alt { get; set; }
     }
 }

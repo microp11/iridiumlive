@@ -12,12 +12,24 @@
     height: 2px;
 }
 
-.live-layout-buttons {
+.span-label-notification-left {
+    float: left;
+    margin-bottom: 3px;
+}
+.span-label-notification-right {
     float: right;
-    margin-top: -16px;
+    margin-top: -13px;
 }
 
 .il-button-playback {
     position: relative;
     top: -2px;
+}
+
+.label-notification {
+    background-color: crimson;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: small;
 }

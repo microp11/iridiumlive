@@ -3,17 +3,37 @@
 @using System.Diagnostics
 
 @inject ILiveService liveService
+@inject IJSRuntime jsRuntime
+
+@implements IDisposable
 
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
+<div>
+    <span class="span-label-notification-left">
+        <NotificationLabel Prepend="IRA" @ref="lblIRA"></NotificationLabel>
+        <NotificationLabel Prepend="IBC" @ref="lblIBC"></NotificationLabel>
+        <NotificationLabel Prepend="IDA" @ref="lblIDA"></NotificationLabel>
+        <NotificationLabel Prepend="IIP" @ref="lblIIP"></NotificationLabel>
+        <NotificationLabel Prepend="IIQ" @ref="lblIIQ"></NotificationLabel>
+        <NotificationLabel Prepend="IIR" @ref="lblIIR"></NotificationLabel>
+        <NotificationLabel Prepend="IIU" @ref="lblIIU"></NotificationLabel>
+        <NotificationLabel Prepend="IMS" @ref="lblIMS"></NotificationLabel>
+        <NotificationLabel Prepend="ISY" @ref="lblISY"></NotificationLabel>
+        <NotificationLabel Prepend="ITL" @ref="lblITL"></NotificationLabel>
+        <NotificationLabel Prepend="IU3" @ref="lblIU3"></NotificationLabel>
+        <NotificationLabel Prepend="MSG" @ref="lblMSG"></NotificationLabel>
+        <NotificationLabel Prepend="VO6" @ref="lblVO6"></NotificationLabel>
+        <NotificationLabel Prepend="VOC" @ref="lblVOC"></NotificationLabel>
+        <NotificationLabel Prepend="N/A" @ref="lblNA"></NotificationLabel>
+    </span>
+    <span class="span-label-notification-right">
+        <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
+    </span>
+</div>
 
-@*this is totally not the most elegant solution but for someone who does not know css would do.*@
 @if (!sideBySideView)
 {
-    <div class="live-layout-buttons">
-        <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
-    </div>
-
     <div class="track-order-map">
         <Map Zoom="4" Location="location" Markers="markers" IsSideBySide="false" @ref="liveMap" />
     </div>
@@ -60,64 +80,59 @@
 }
 else
 {
-    <div class="live-layout-buttons">
-        <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>
-    </div>
+    <div>
+        <div class="col-7 pl-0">
 
-    <div class="container">
-        <div class="row">
-            <div class="col-7 pl-0">
-
-                <div class="track-order-map">
-                    <Map Zoom="4" Location="location" IsSideBySide="true" Markers="markers" @ref="liveMap" />
-                </div>
-                <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
-
+            <div class="track-order-map">
+                <Map Zoom="4" Location="location" IsSideBySide="true" Markers="markers" @ref="liveMap" />
             </div>
-            <div class="col-5 pr-0">
+            <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
 
-                @if (viewIras == null || liveMap == null || oldViewIras == null)
+        </div>
+        <div class="col-5 pr-0">
+
+            @if (viewIras == null || liveMap == null || oldViewIras == null)
+            {
+                <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
+            }
+            else
+            {
+                if (viewIras.Count == 0)
                 {
-                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
+                    viewIras = oldViewIras;
                 }
                 else
                 {
-                    if (viewIras.Count == 0)
-                    {
-                        viewIras = oldViewIras;
-                    }
-                    else
-                    {
-                        oldViewIras = viewIras;
-                    }
-
-                    <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
-                        <Columns>
-                            <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
-                            <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
-                            <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
-                                <Template Context="context">
-                                    @context.Quality %
-                                </Template>
-                            </RadzenGridColumn>
-                            <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
-                            <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
-                                <Template Context="context">
-                                    @context.Lat N @context.Lon E
-                                </Template>
-                            </RadzenGridColumn>
-                            <RadzenGridColumn TItem="ViewIra" Title="Altitude">
-                                <Template Context="context">
-                                    @string.Format("{0} km", context.Alt)
-                                </Template>
-                            </RadzenGridColumn>
-                        </Columns>
-                    </RadzenGrid>
+                    oldViewIras = viewIras;
                 }
 
-            </div>
+                <RadzenGrid AllowPaging="true" Data="@viewIras" TItem="ViewIra">
+                    <Columns>
+                        <RadzenGridColumn TItem="ViewIra" Property="Name" Title="Sat" />
+                        <RadzenGridColumn TItem="ViewIra" Property="Time" Title="Time" Width="200px" />
+                        <RadzenGridColumn TItem="ViewIra" Property="Quality" Title="Quality">
+                            <Template Context="context">
+                                @context.Quality %
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ViewIra" Property="Beam" Title="Beam" />
+                        <RadzenGridColumn TItem="ViewIra" Title="Coordinates" Width="120px">
+                            <Template Context="context">
+                                @context.Lat N @context.Lon E
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ViewIra" Title="Altitude">
+                            <Template Context="context">
+                                @string.Format("{0} km", context.Alt)
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            }
+
         </div>
     </div>
+
 }
 
 @code {
@@ -128,6 +143,31 @@ else
     private ICollection<ViewIra> viewIras, oldViewIras;
     private long lastUtcTicks;
     private Map liveMap;
+    private NotificationLabel lblIRA;
+    private NotificationLabel lblIBC;
+    private NotificationLabel lblIDA;
+    private NotificationLabel lblIIP;
+    private NotificationLabel lblIIQ;
+    private NotificationLabel lblIIR;
+    private NotificationLabel lblIIU;
+    private NotificationLabel lblIMS;
+    private NotificationLabel lblISY;
+    private NotificationLabel lblIU3;
+    private NotificationLabel lblITL;
+    private NotificationLabel lblMSG;
+    private NotificationLabel lblVO6;
+    private NotificationLabel lblVOC;
+    private NotificationLabel lblNA;
+
+    private bool timerCallAgain = false;
+    private Timer timer = null;
+    private bool timerIsRunning = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await jsRuntime.InvokeAsync<object>("NotifyLive", DotNetObjectReference.Create(this));
+    }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -139,12 +179,7 @@ else
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    private void TimerElapsedHandler()
-    {
-        InvokeAsync(async () => await ReloadOnTimer());
-    }
-
-    private async Task ReloadOnTimer()
+    private async Task LoadOnTimerAsync()
     {
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
@@ -210,4 +245,120 @@ else
         sideBySideView = !sideBySideView;
         StateHasChanged();
     }
-}   
+
+    [JSInvokable]
+    public async Task UpdateMessagesAsync(string message)
+    {
+        NotifyTimer();
+        switch (message)
+        {
+            case "IRA":
+                await lblIRA.UpdateLabelAsync();
+                break;
+
+            case "IBC":
+                await lblIBC.UpdateLabelAsync();
+                break;
+
+            case "IDA":
+                await lblIDA.UpdateLabelAsync();
+                break;
+
+            case "IIP":
+                await lblIIP.UpdateLabelAsync();
+                break;
+
+            case "IIQ":
+                await lblIIQ.UpdateLabelAsync();
+                break;
+
+            case "IIR":
+                await lblIIR.UpdateLabelAsync();
+                break;
+
+            case "IIU":
+                await lblIIU.UpdateLabelAsync();
+                break;
+
+            case "IMS":
+                await lblIMS.UpdateLabelAsync();
+                break;
+
+            case "ISY":
+                await lblISY.UpdateLabelAsync();
+                break;
+
+            case "IU3":
+                await lblIU3.UpdateLabelAsync();
+                break;
+
+            case "ITL":
+                await lblITL.UpdateLabelAsync();
+                break;
+
+            case "MSG":
+                await lblMSG.UpdateLabelAsync();
+                break;
+
+            case "VO6":
+                await lblVO6.UpdateLabelAsync();
+                break;
+
+            case "VOC":
+                await lblVOC.UpdateLabelAsync();
+                break;
+
+            default:
+                await lblNA.UpdateLabelAsync();
+                break;
+        }
+
+        await Task.FromResult(0);
+    }
+
+    private void NotifyTimer()
+    {
+        if (timerIsRunning)
+        {
+            timerCallAgain = true;
+        }
+        else
+        {
+            Debug.WriteLine("timer started");
+            timerIsRunning = true;
+
+            if (timer == null)
+            {
+                timer = new Timer(OnTimerElapsed, null, 10000, Timeout.Infinite);
+            }
+
+            timer.Change(10000, Timeout.Infinite);
+        }
+    }
+
+    private void OnTimerElapsed(object state)
+    {
+        Debug.WriteLine("timer elapsed");
+        InvokeAsync(async () => await LoadOnTimerAsync());
+
+        timerIsRunning = false;
+
+        if (timerCallAgain)
+        {
+            timerCallAgain = false;
+            NotifyTimer();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        try
+        {
+            timer?.Dispose();
+        }
+        catch(Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+    }
+}

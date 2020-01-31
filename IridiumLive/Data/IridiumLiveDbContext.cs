@@ -36,10 +36,13 @@ namespace IridiumLive.Data
         {
         }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-        //    //modelBuilder.Ignore<ViewIra>();
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<ViewIra>(v =>
+            {
+                v.ToView("V_ViewIras");
+            });
+        }
     }
 }

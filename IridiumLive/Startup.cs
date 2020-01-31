@@ -95,10 +95,10 @@ namespace IridiumLive
             try
             {
                 var context = scope.ServiceProvider.GetService<IridiumLiveDbContext>();
-                //context.Database.EnsureDeleted();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
-                //this should be called in a different spot
+                //this should be called in a different spot?
                 context.Database.ExecuteSqlRaw(@"
                     create view if not exists V_ViewIras as 
                     select i.Id, i.Time, i.UtcTicks, i.Quality, i.SatNo, s.Name, i.Beam, i.Lat, i.Lon, i.Alt
@@ -129,7 +129,8 @@ namespace IridiumLive
                 return;
             }
             await satsService.AddRxLineAsync(rxLine);
-            await notificationService.SendNotificationAsync(rxLine);
+            string id = rxLine.Substring(0, 3);
+            await notificationService.SendNotificationAsync(id);
         }
     }
 }

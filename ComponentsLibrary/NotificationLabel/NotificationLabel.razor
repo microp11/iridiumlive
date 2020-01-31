@@ -1,0 +1,19 @@
+﻿<button class="label-notification">@Label</button>
+
+@code {
+    private int count = 0;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string Prepend { get; set; }
+
+    public async Task UpdateLabelAsync()
+    {
+        count++;
+        Label = string.Format($"{Prepend}: {count}");
+        StateHasChanged();
+        await Task.FromResult(0);
+    }
+}
