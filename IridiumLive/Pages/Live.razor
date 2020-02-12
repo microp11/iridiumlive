@@ -27,9 +27,9 @@
         <NotificationLabel Prepend="VOC" @ref="lblVOC"></NotificationLabel>
         <NotificationLabel Prepend="N/A" @ref="lblNA"></NotificationLabel>
     </span>
-    <span class="span-label-notification-right">
+    @*<span class="span-label-notification-right">
         <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
-    </span>
+    </span>*@
 </div>
 
 @if (!sideBySideView)
@@ -80,16 +80,16 @@
 }
 else
 {
-    <div>
-        <div class="col-7 pl-0">
+    @*<div>
+        <span class="span-map-left">
 
             <div class="track-order-map">
                 <Map Zoom="4" Location="location" IsSideBySide="true" Markers="markers" @ref="liveMap" />
             </div>
             <p>Red dots indicate the physical satellite position, blue dots indicate signal activity in ground vecinity.</p>
 
-        </div>
-        <div class="col-5 pr-0">
+        </span>
+        <span class="span-grid-right">
 
             @if (viewIras == null || liveMap == null || oldViewIras == null)
             {
@@ -130,9 +130,8 @@ else
                 </RadzenGrid>
             }
 
-        </div>
-    </div>
-
+        </span>
+    </div>*@
 }
 
 @code {
@@ -162,11 +161,15 @@ else
     private bool timerCallAgain = false;
     private Timer timer = null;
     private bool timerIsRunning = false;
+    private bool timerHasBeenDisposed = false;
 
 
     protected override async Task OnInitializedAsync()
     {
         await jsRuntime.InvokeAsync<object>("NotifyLive", DotNetObjectReference.Create(this));
+        
+        // If there is any data already in the database, get most recent Ira record now
+        await LoadOnTimerAsync();
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -179,6 +182,10 @@ else
         return base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <summary>
+    /// Gets the data using the data service
+    /// </summary>
+    /// <returns></returns>
     private async Task LoadOnTimerAsync()
     {
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
@@ -240,12 +247,23 @@ else
         location.Color = "green";
     }
 
+    /// <summary>
+    /// Toggles the view for horizontal/vertical screens
+    /// </summary>
     private void ToggleHVView()
     {
-        sideBySideView = !sideBySideView;
-        StateHasChanged();
+        //sideBySideView = !sideBySideView;
+        //StateHasChanged();
     }
 
+    /// <summary>
+    /// Any time a message is being received we start the trigger a timer start.
+    /// If the timer has been elapsed, this will restart it.
+    /// If the timer is in the process of triggering, it is not restarted but a remainder is placed
+    /// such then when the timer do elapses to know to automatically start again.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     [JSInvokable]
     public async Task UpdateMessagesAsync(string message)
     {
@@ -329,15 +347,25 @@ else
 
             if (timer == null)
             {
-                timer = new Timer(OnTimerElapsed, null, 10000, Timeout.Infinite);
+                timer = new Timer(OnTimerElapsed, (object)timerHasBeenDisposed, 10000, Timeout.Infinite);
             }
 
             timer.Change(10000, Timeout.Infinite);
         }
     }
 
+    /// <summary>
+    /// This is where we trigger the load of new data.
+    /// If the timer has elapsed after it has been disposed, we exit.
+    /// </summary>
+    /// <param name="state"></param>
     private void OnTimerElapsed(object state)
     {
+        if ((bool)state)
+        {
+            return;
+        }
+
         Debug.WriteLine("timer elapsed");
         InvokeAsync(async () => await LoadOnTimerAsync());
 
@@ -350,8 +378,12 @@ else
         }
     }
 
+    /// <summary>
+    /// Gets called when the page is closed or when the tab is closed.
+    /// </summary>
     void IDisposable.Dispose()
     {
+        timerHasBeenDisposed = true;
         try
         {
             timer?.Dispose();

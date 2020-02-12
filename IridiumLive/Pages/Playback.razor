@@ -11,9 +11,9 @@
 @*this is totally not the most elegant solution but for someone who does not know css would do.*@
 @if (!isSideBySide)
 {
-    <div class="live-layout-buttons">
+    @*<div class="live-layout-buttons">
         <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="smartphone"></RadzenButton>
-    </div>
+    </div>*@
 
     <div class="track-order-map">
         <Map Zoom="4" Location="location" Markers="markers" IsSideBySide="false" @ref="liveMap" />
@@ -49,9 +49,9 @@
 }
 else
 {
-    <div class="live-layout-buttons">
+    @*<div class="live-layout-buttons">
         <RadzenButton Click="@ToggleHVView" ButtonStyle="ButtonStyle.Secondary" Icon="tablet"></RadzenButton>
-    </div>
+    </div>*@
 
     <div class="container">
         <div class="row">

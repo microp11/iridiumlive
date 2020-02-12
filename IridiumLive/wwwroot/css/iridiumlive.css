@@ -16,6 +16,15 @@
     float: left;
     margin-bottom: 3px;
 }
+
+.span-map-left {
+    float: left;
+}
+
+.span-grid-right {
+    float: right;
+}
+
 .span-label-notification-right {
     float: right;
     margin-top: -13px;
