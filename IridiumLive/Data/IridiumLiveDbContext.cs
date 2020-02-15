@@ -30,6 +30,7 @@ namespace IridiumLive.Data
         public DbSet<ViewIra> ViewIras { get; set; }
         public DbSet<Ibc> Ibcs { get; set; }
         public DbSet<Stat> Stats { get; set; }
+        public DbSet<Untractable> Untractables { get; set; }
 
         public IridiumLiveDbContext(DbContextOptions<IridiumLiveDbContext> options)
            : base(options)

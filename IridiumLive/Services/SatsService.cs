@@ -203,7 +203,21 @@ namespace IridiumLive.Services
                 else
                 {
                     //Console.WriteLine("N/A: {0} {1}", satTime, utcTicks);
-                    return false;
+                    Untractable untractable = new Untractable
+                    {
+                        Id = rxLine
+                    };
+
+                    _context.Untractables.Add(untractable);
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (DbUpdateException)
+                    {
+                        return false;
+                    }
                 }
 
                 Sat sat = new Sat
