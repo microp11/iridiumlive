@@ -1,9 +1,8 @@
 ﻿@page "/live"
 
-@using System.Diagnostics
-
 @inject ILiveService liveService
-@inject TimerService timer
+
+@implements IDisposable
 
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
@@ -129,7 +128,22 @@ else
     private ICollection<ViewIra> viewIras, oldViewIras;
     private long lastUtcTicks;
     private Map liveMap;
-    private const int interval = 10000;
+
+    private Timer timer;
+    private int timerInterval = 10000;
+    private bool timerHasBeenDisposed = false;
+    Stopwatch sw;
+    string uniquePageId;
+
+    protected override void OnInitialized()
+    {
+        uniquePageId = "LIVE-" + Guid.NewGuid().ToString();
+        sw = new Stopwatch();
+        sw.Start();
+        Debug.WriteLine($"Initializing {uniquePageId}");
+
+        timer = new Timer(OnTimerElapsed, (object)timerHasBeenDisposed, 1000, timerInterval);
+    }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -138,25 +152,29 @@ else
             lastUtcTicks = 0;
             SetLocation(location);
         }
-        StartTimer(interval);
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    private void StartTimer(int interval)
+    /// <summary>
+    /// This is where we trigger the load of new data.
+    /// If the timer has elapsed after it has been disposed, we exit.
+    /// </summary>
+    /// <param name="state"></param>
+    private void OnTimerElapsed(object state)
     {
-        timer.SetTimer(interval);
-        timer.OnElapsed -= TimerElapsedHandler;
-        timer.OnElapsed += TimerElapsedHandler;
-        //Debug.WriteLine("Timer Live Started. {0}", Thread.CurrentThread.ManagedThreadId);
+        Debug.WriteLine("OnTimerElapsed after {0} ms. Triggering page {1} load.", sw.ElapsedMilliseconds, uniquePageId);
+        sw.Restart();
+
+        if ((bool)state)
+        {
+            Debug.WriteLine("Called after disposed {0}. Exiting!", uniquePageId);
+            return;
+        }
+
+        InvokeAsync(async () => await LoadOnTimerAsync());
     }
 
-    private void TimerElapsedHandler()
-    {
-        //Debug.WriteLine("Timer live Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
-        InvokeAsync(async () => await ReloadOnTimer());
-    }
-
-    private async Task ReloadOnTimer()
+    private async Task LoadOnTimerAsync()
     {
         //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
@@ -208,6 +226,11 @@ else
         {
             Debug.WriteLine(ex.Message);
         }
+        finally
+        {
+            Debug.WriteLine("Page {0} loaded after {1} ms.", uniquePageId, sw.ElapsedMilliseconds);
+            sw.Restart();
+        }
     }
 
     private void SetLocation(Marker location)
@@ -221,5 +244,23 @@ else
     {
         sideBySideView = !sideBySideView;
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Gets called when the page or tab is closed.
+    /// </summary>
+    void IDisposable.Dispose()
+    {
+        timerHasBeenDisposed = true;
+        Debug.WriteLine("Page {0} closed. Timer disposed {1} ms.", uniquePageId, sw.ElapsedMilliseconds);
+
+        try
+        {
+            timer?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 }   

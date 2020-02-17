@@ -2,10 +2,9 @@
 
 @inherits OwningComponentBase<IridiumLiveDbContext>
 
-@using System.Diagnostics
-
 @inject IStatsService statsService
-@inject TimerService timer
+
+@implements IDisposable
 
 <h2>Statistics</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
@@ -28,35 +27,72 @@ else
 @code {
     private ICollection<Stat> stats;
     private string latestUpdate;
-    private const int interval = 5000;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    private Timer timer;
+    private int timerInterval = 10000;
+    private bool timerHasBeenDisposed = false;
+    Stopwatch sw;
+    string uniquePageId;
+
+    protected override void OnInitialized()
     {
-        StartTimer(interval);
-        return base.OnAfterRenderAsync(firstRender);
+        uniquePageId = "STATS-" + Guid.NewGuid().ToString();
+        sw = new Stopwatch();
+        sw.Start();
+        Debug.WriteLine($"Initializing {uniquePageId}");
+
+        timer = new Timer(OnTimerElapsed, (object)timerHasBeenDisposed, 1000, timerInterval);
     }
 
-    private void StartTimer(int interval)
+    /// <summary>
+    /// This is where we trigger the load of new data.
+    /// If the timer has elapsed after it has been disposed, we exit.
+    /// </summary>
+    /// <param name="state"></param>
+    private void OnTimerElapsed(object state)
     {
-        timer.SetTimer(interval);
-        timer.OnElapsed -= TimerElapsedHandler;
-        timer.OnElapsed += TimerElapsedHandler;
-        //Debug.WriteLine("Timer Stats Started. {0}", Thread.CurrentThread.ManagedThreadId);
+        Debug.WriteLine("OnTimerElapsed after {0} ms. Triggering page {1} load.", sw.ElapsedMilliseconds, uniquePageId);
+        sw.Restart();
+
+        if ((bool)state)
+        {
+            Debug.WriteLine("Called after disposed {0}. Exiting!", uniquePageId);
+            return;
+        }
+
+        InvokeAsync(async () => await LoadOnTimerAsync());
     }
 
-    private void TimerElapsedHandler()
-    {
-        //Debug.WriteLine("Timer Stats Elapsed. {0}", Thread.CurrentThread.ManagedThreadId);
-        InvokeAsync(async () => await ReloadOnTimer());
-    }
-
-    private async Task ReloadOnTimer()
+    private async Task LoadOnTimerAsync()
     {
         try
         {
             stats = await statsService.GetStatsAsync();
             latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
             StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+        finally
+        {
+            Debug.WriteLine("Page {0} loaded after {1} ms.", uniquePageId, sw.ElapsedMilliseconds);
+            sw.Restart();
+        }
+    }
+
+    /// <summary>
+    /// Gets called when the page or tab is closed.
+    /// </summary>
+    void IDisposable.Dispose()
+    {
+        timerHasBeenDisposed = true;
+        Debug.WriteLine("Page {0} closed. Timer disposed {1} ms.", uniquePageId, sw.ElapsedMilliseconds);
+
+        try
+        {
+            timer?.Dispose();
         }
         catch (Exception ex)
         {

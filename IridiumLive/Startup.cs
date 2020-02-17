@@ -62,8 +62,6 @@ namespace IridiumLive
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<ILiveService, LiveService>();
             services.AddScoped<IPlaybackService, PlaybackService>();
-
-            services.AddTransient<TimerService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
