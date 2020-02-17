@@ -20,20 +20,17 @@
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IridiumLive.Data
 {
-    public class Sat
+    public class Untractable
     {
         public string Id { get; set; }
-        public int SatNo { get; set; }
-        public string Name { get; set; }
-        public string Model { get; set; }
-        public int OrbitalPlane { get; set; }
-        public int PlaneSlot { get; set; }
-        public string CatalogNumber { get; set; }
-        public string Notes { get; set; }
-        public string Author { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public DateTimeOffset Time { get; set; }
+        public long UtcTicks { get; set; }
+        public int Quality { get; set; }
+        public string PacketId { get; set; }
     }
 }

@@ -30,16 +30,24 @@ namespace IridiumLive.Data
         public DbSet<ViewIra> ViewIras { get; set; }
         public DbSet<Ibc> Ibcs { get; set; }
         public DbSet<Stat> Stats { get; set; }
+        public DbSet<Untractable> Untractables { get; set; }
 
         public IridiumLiveDbContext(DbContextOptions<IridiumLiveDbContext> options)
            : base(options)
         {
         }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-        //    //modelBuilder.Ignore<ViewIra>();
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<ViewIra>(v =>
+            {
+                v.ToView("V_ViewIras");
+            });
+
+            modelBuilder.Entity<Untractable>()
+                .HasIndex(u => u.PacketId)
+                .HasName("IX_PacketId");
+        }
     }
 }

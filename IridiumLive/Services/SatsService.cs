@@ -127,8 +127,29 @@ namespace IridiumLive.Services
                 long utcTicks = satTime.ToUniversalTime().UtcTicks;
                 int quality = Convert.ToInt32(words[4].TrimEnd('%'), CultureInfo.InvariantCulture);
                 int satNo;
-                //Debug.WriteLine("{0} {1}", words[0], satTime);
+                Debug.WriteLine("{0} {1}", words[0], satTime);
 
+                //store everything
+                Untractable untractable = new Untractable
+                {
+                    Id = rxLine,
+                    Time = satTime,
+                    UtcTicks = utcTicks,
+                    Quality = quality,
+                    PacketId = words[0].Substring(0, 3)
+                };
+
+                _context.Untractables.Add(untractable);
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return false;
+                }
+
+                //store for immediate view
                 if (words[0] == "IRA:")
                 {
                     Console.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks);
@@ -136,11 +157,8 @@ namespace IridiumLive.Services
                     Ira ira = new Ira
                     {
                         Id = rxLine,
-
                         Time = satTime,
-
                         UtcTicks = utcTicks,
-
                         Quality = quality
                     };
 
@@ -175,11 +193,8 @@ namespace IridiumLive.Services
                     Ibc ibc = new Ibc
                     {
                         Id = rxLine,
-
                         Time = satTime,
-
                         UtcTicks = utcTicks,
-
                         Quality = quality
                     };
 
@@ -202,19 +217,23 @@ namespace IridiumLive.Services
                 }
                 else
                 {
-                    //Console.WriteLine("N/A: {0} {1}", satTime, utcTicks);
+                    //no IRA/IBC so no sat number present
                     return false;
                 }
 
-                Sat sat = new Sat
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    SatNo = satNo,
-                    Name = satNo.ToString()
-                };
-
+                //store IRA/IBC into the sat table, they have sat numbers
+                //store to avoid query, which could be a compounded view
+                //as it will save on write operations to db, however the view might be more expensive
+                //need to research
                 if (!SatExists(satNo))
                 {
+                    Sat sat = new Sat
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        SatNo = satNo,
+                        Name = satNo.ToString()
+                    };
+
                     _context.Sats.Add(sat);
                     try
                     {

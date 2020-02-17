@@ -218,7 +218,7 @@ else
                 }
             }
 
-            latestUpdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z");
+            latestUpdate = string.Format("{0} in {1}ms", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss z"), sw.ElapsedMilliseconds);
 
             StateHasChanged();
         }
