@@ -130,7 +130,7 @@ namespace IridiumLive.Services
                 Debug.WriteLine("{0} {1}", words[0], satTime);
 
                 //store everything
-                Untractable untractable = new Untractable
+                Packet packets = new Packet
                 {
                     Id = rxLine,
                     Time = satTime,
@@ -139,7 +139,7 @@ namespace IridiumLive.Services
                     PacketId = words[0].Substring(0, 3)
                 };
 
-                _context.Untractables.Add(untractable);
+                _context.Packets.Add(packets);
                 try
                 {
                     await _context.SaveChangesAsync();

@@ -19,18 +19,15 @@
  *
  */
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IridiumLive.Data
 {
-    public class Untractable
+    public class PacketCounter
     {
-        public string Id { get; set; }
-        public DateTimeOffset Time { get; set; }
+        [Key] 
+        public string PacketName { get; set; }
+        public int Count { get; set; }
         public long UtcTicks { get; set; }
-        public int Quality { get; set; }
-        public string PacketId { get; set; }
     }
 }

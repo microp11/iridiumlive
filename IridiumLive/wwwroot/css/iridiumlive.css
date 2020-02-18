@@ -21,3 +21,16 @@
     position: relative;
     top: -2px;
 }
+
+.label-notification {
+    background-color: crimson;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: x-small;
+}
+
+.span-label-notification-left {
+    float: left;
+    margin-bottom: 3px;
+}

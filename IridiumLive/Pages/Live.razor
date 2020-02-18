@@ -1,11 +1,31 @@
 ﻿@page "/live"
 
 @inject ILiveService liveService
+@inject IPacketCounterService packetCounterService;
 
 @implements IDisposable
 
 <h2>Live view for Iridium ring alert bursts</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
+<div>
+    <span class="span-label-notification-left">
+        <PacketCounterLabel Prepend="IRA" @ref="lblIRA"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IBC" @ref="lblIBC"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IDA" @ref="lblIDA"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IIP" @ref="lblIIP"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IIQ" @ref="lblIIQ"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IIR" @ref="lblIIR"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IIU" @ref="lblIIU"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IMS" @ref="lblIMS"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="ISY" @ref="lblISY"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="ITL" @ref="lblITL"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="IU3" @ref="lblIU3"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="MSG" @ref="lblMSG"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="VO6" @ref="lblVO6"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="VOC" @ref="lblVOC"></PacketCounterLabel>
+        <PacketCounterLabel Prepend="N/A" @ref="lblNA"></PacketCounterLabel>
+    </span>
+</div>
 
 @*this is totally not the most elegant solution but for someone who does not know css would do.*@
 @if (!sideBySideView)
@@ -126,7 +146,8 @@ else
     private Marker location = new Marker();
     private List<Marker> markers = new List<Marker>();
     private ICollection<ViewIra> viewIras, oldViewIras;
-    private long lastUtcTicks;
+    private long lastPacketsUtcTicks;
+    private long lastIraUtcTicks;
     private Map liveMap;
 
     private Timer timer;
@@ -135,12 +156,31 @@ else
     Stopwatch sw;
     string uniquePageId;
 
-    protected override void OnInitialized()
+    private PacketCounterLabel lblIRA;
+    private PacketCounterLabel lblIBC;
+    private PacketCounterLabel lblIDA;
+    private PacketCounterLabel lblIIP;
+    private PacketCounterLabel lblIIQ;
+    private PacketCounterLabel lblIIR;
+    private PacketCounterLabel lblIIU;
+    private PacketCounterLabel lblIMS;
+    private PacketCounterLabel lblISY;
+    private PacketCounterLabel lblIU3;
+    private PacketCounterLabel lblITL;
+    private PacketCounterLabel lblMSG;
+    private PacketCounterLabel lblVO6;
+    private PacketCounterLabel lblVOC;
+    private PacketCounterLabel lblNA;
+
+    protected override async Task OnInitializedAsync()
     {
         uniquePageId = "LIVE-" + Guid.NewGuid().ToString();
         sw = new Stopwatch();
         sw.Start();
         Debug.WriteLine($"Initializing {uniquePageId}");
+
+        lastPacketsUtcTicks = await liveService.GetLastUtcTicks();
+        lastIraUtcTicks = lastPacketsUtcTicks;
 
         timer = new Timer(OnTimerElapsed, (object)timerHasBeenDisposed, 1000, timerInterval);
     }
@@ -149,7 +189,6 @@ else
     {
         if (firstRender)
         {
-            lastUtcTicks = 0;
             SetLocation(location);
         }
         return base.OnAfterRenderAsync(firstRender);
@@ -176,10 +215,13 @@ else
 
     private async Task LoadOnTimerAsync()
     {
-        //Debug.WriteLine("ReloadOnTimer thread {0}", Thread.CurrentThread.ManagedThreadId);
         try
         {
-            viewIras = await liveService.GetLiveIraAsync(lastUtcTicks);
+            ICollection<PacketCounter> packetCounters = await packetCounterService.GetPacketCountersAsync(lastPacketsUtcTicks);
+            await UpdatePacketCountersAsync(packetCounters);
+
+            viewIras = await liveService.GetLiveIraAsync(lastIraUtcTicks);
+
             if (oldViewIras == null)
             {
                 if (viewIras != null)
@@ -191,7 +233,6 @@ else
                 }
             }
 
-            //the list must arrive in descending order otherwise the time is incorrectly computed
             var liveira = viewIras.FirstOrDefault();
 
             if (liveira != null)
@@ -200,6 +241,8 @@ else
                 List<Marker> coloredMarkers = new List<Marker>();
                 foreach (ViewIra record in viewIras)
                 {
+                    lastIraUtcTicks = Math.Max(lastIraUtcTicks, liveira.UtcTicks);
+
                     Marker m = new Marker();
                     m.Lat = record.Lat;
                     m.Lon = record.Lon;
@@ -214,7 +257,6 @@ else
                 if (liveMap != null)
                 {
                     await liveMap.RenderMarkers(coloredMarkers);
-                    lastUtcTicks = liveira.UtcTicks;
                 }
             }
 
@@ -230,6 +272,86 @@ else
         {
             Debug.WriteLine("Page {0} loaded after {1} ms.", uniquePageId, sw.ElapsedMilliseconds);
             sw.Restart();
+        }
+    }
+
+    private async Task UpdatePacketCountersAsync(ICollection<PacketCounter> packetCounters)
+    {
+        try
+        {
+            foreach (PacketCounter line in packetCounters)
+            {
+                lastPacketsUtcTicks = Math.Max(lastPacketsUtcTicks, line.UtcTicks);
+
+                switch (line.PacketName)
+                {
+                    case "IRA":
+                        await lblIRA.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IBC":
+                        await lblIBC.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IDA":
+                        await lblIDA.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IIP":
+                        await lblIIP.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IIQ":
+                        await lblIIQ.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IIR":
+                        await lblIIR.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IIU":
+                        await lblIIU.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IMS":
+                        await lblIMS.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "ISY":
+                        await lblISY.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "IU3":
+                        await lblIU3.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "ITL":
+                        await lblITL.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "MSG":
+                        await lblMSG.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "VO6":
+                        await lblVO6.IncrementCountAsync(line.Count);
+                        break;
+
+                    case "VOC":
+                        await lblVOC.IncrementCountAsync(line.Count);
+                        break;
+
+                    default:
+                        await lblNA.IncrementCountAsync(line.Count);
+                        break;
+                }
+            }
+
+            await Task.FromResult(0);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
         }
     }
 

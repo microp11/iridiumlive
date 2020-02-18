@@ -37,58 +37,41 @@ using System.Threading.Tasks;
 
 namespace IridiumLive.Services
 {
-    public interface ILiveService
+    public interface IPacketCounterService
     {
-        public Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks);
-
-        public Task<long> GetLastUtcTicks();
+        public Task<ICollection<PacketCounter>> GetPacketCountersAsync(long utcTicks);
     }
 
-    public class LiveService : IridiumService, ILiveService
+    public class PacketCounterService : IridiumService, IPacketCounterService
     {
         private readonly Stopwatch sw;
 
-        public LiveService(IConfiguration configuration) : base(configuration)
+        public PacketCounterService(IConfiguration configuration) : base(configuration)
         {
             sw = new Stopwatch();
         }
 
-        public async Task<long> GetLastUtcTicks()
-        {
-            sw.Reset();
-            sw.Start();
-
-            long result = 0;
-
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
-            try
-            {
-                var a = await _context.Packets.OrderByDescending(x => x.UtcTicks).FirstOrDefaultAsync();
-                result = a.UtcTicks;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            sw.Stop();
-            Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
-            return result;
-        }
-
-        public async Task<ICollection<ViewIra>> GetLiveIraAsync(long utcTicks)
+        /// <summary>
+        /// If the utcTicks is zero, returns the most recent record.
+        /// The returned records are in descending order. Important!
+        /// </summary>
+        /// <param name="utcTicks"></param>
+        /// <returns></returns>
+        public async Task<ICollection<PacketCounter>> GetPacketCountersAsync(long utcTicks)
         {
             sw.Reset();
             sw.Start();
 
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
-            var result = await _context.ViewIras
-                .OrderByDescending(s => s.UtcTicks)
-                .Where(s => s.UtcTicks > utcTicks)
-                .AsNoTracking()
-                .ToListAsync();
+            FormattableString sqlString = $@"
+                select PacketId as PacketName, count(PacketId) as Count, max(UtcTicks) as UtcTicks from Packets
+                where UtcTicks > {utcTicks}
+                group by PacketId";
             sw.Stop();
             Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
-            return result;
+            var l = await _context.PacketCounters.FromSqlInterpolated(sqlString).AsNoTracking().ToListAsync();
+            return l;
         }
     }
 }
+

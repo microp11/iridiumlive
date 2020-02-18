@@ -62,6 +62,7 @@ namespace IridiumLive
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<ILiveService, LiveService>();
             services.AddScoped<IPlaybackService, PlaybackService>();
+            services.AddScoped<IPacketCounterService, PacketCounterService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
