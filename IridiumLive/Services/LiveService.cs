@@ -71,7 +71,7 @@ namespace IridiumLive.Services
                 Console.WriteLine(ex.Message);
             }
             sw.Stop();
-            Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
+            Console.WriteLine("GetLastUtcTicks in: {0} ms.", sw.ElapsedMilliseconds);
             return result;
         }
 
@@ -87,7 +87,7 @@ namespace IridiumLive.Services
                 .AsNoTracking()
                 .ToListAsync();
             sw.Stop();
-            Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
+            Console.WriteLine("GetLiveIraAsync in: {0} ms.", sw.ElapsedMilliseconds);
             return result;
         }
     }

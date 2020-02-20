@@ -48,7 +48,7 @@ namespace IridiumLive.Services
     {
         public SatsService(IConfiguration configuration) : base(configuration)
         {
-            Console.WriteLine("Only IRA gets charted.");
+            //Console.WriteLine("Only IRA gets charted.");
         }
 
         public async Task<ICollection<Sat>> GetSatsAsync()
@@ -121,6 +121,7 @@ namespace IridiumLive.Services
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options); 
             try
             {
+                string newGuid = Guid.NewGuid().ToString();
                 string[] words = rxLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 string[] words1 = words[1].Split('-');
                 DateTimeOffset satTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(words1[1], CultureInfo.InvariantCulture)).AddMilliseconds(Convert.ToInt64(words[2], CultureInfo.InvariantCulture)).ToLocalTime();
@@ -132,7 +133,7 @@ namespace IridiumLive.Services
                 //store everything
                 Packet packets = new Packet
                 {
-                    Id = rxLine,
+                    Id = newGuid,
                     Time = satTime,
                     UtcTicks = utcTicks,
                     Quality = quality,
@@ -156,7 +157,7 @@ namespace IridiumLive.Services
 
                     Ira ira = new Ira
                     {
-                        Id = rxLine,
+                        Id = newGuid,
                         Time = satTime,
                         UtcTicks = utcTicks,
                         Quality = quality
@@ -192,7 +193,7 @@ namespace IridiumLive.Services
                     //Console.WriteLine("{0} {1} {2}", words[0], satTime, utcTicks); 
                     Ibc ibc = new Ibc
                     {
-                        Id = rxLine,
+                        Id = newGuid,
                         Time = satTime,
                         UtcTicks = utcTicks,
                         Quality = quality
@@ -229,7 +230,8 @@ namespace IridiumLive.Services
                 {
                     Sat sat = new Sat
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        //it does not matter we use an existing Guid as long as it is unique
+                        Id = newGuid,
                         SatNo = satNo,
                         Name = satNo.ToString()
                     };
