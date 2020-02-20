@@ -66,7 +66,7 @@ else
     /// <param name="state"></param>
     private void OnTimerElapsed(object state)
     {
-        Debug.WriteLine("OnTimerElapsed after {0} ms. Triggering page {1} load.", sw.ElapsedMilliseconds, uniquePageId);
+        //Debug.WriteLine("OnTimerElapsed after {0} ms triggering page {1} load.", sw.ElapsedMilliseconds, uniquePageId);
         sw.Restart();
 
         if ((bool)state)

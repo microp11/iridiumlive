@@ -128,7 +128,7 @@ namespace IridiumLive.Services
                 long utcTicks = satTime.ToUniversalTime().UtcTicks;
                 int quality = Convert.ToInt32(words[4].TrimEnd('%'), CultureInfo.InvariantCulture);
                 int satNo;
-                Debug.WriteLine("{0} {1}", words[0], satTime);
+                //Debug.WriteLine("{0} {1}", words[0], satTime);
 
                 //store everything
                 Packet packets = new Packet

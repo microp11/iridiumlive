@@ -6,24 +6,73 @@
 <p class="iridium-live-version">@getVersion()</p>
 
 <hr />
-<p>This is pre-release software. Issues, crashes, things that are not quite right... they all might be around.</p>
 <p>Please log issues or comments at: <a href="https://github.com/microp11/iridiumlive/issues" target="_blank">microp11/iridiumlive/issues</a></p>
 
 <hr />
+<h3>Experimenting with:</h3>
+<ul>
+    <li>
+        Blazor
+        <ul>
+            <li>One Page Applications for Web</li>
+            <li>Server side, understanding the programming model</li>
+            <li>Writing components</li>
+            <li>Timer-based (two pushing models)</li>
+            <li>Integrating real-time socket services (UDP)</li>
+            <li>Map service and library integrations</li>
+        </ul>
+    </li>
+    <li>
+        SQLite
+        <ul>
+            <li>Blazor EF SQLite integration</li>
+            <li>EF Views</li>
+            <li>EF Indexes</li>
+        </ul>
+    </li>
+    <li>
+        SignaR
+        <ul>
+            <li>Communication channels</li>
+            <li>Two-way real-time notifications, chat type communication</li>
+            <li>JSInterop integration</li>
+        </ul>
+    </li>
+    <li>
+        Multiplatform deployment
+        <ul>
+            <li>Windows</li>
+            <li>Linux</li>
+            <li>RaspberryPi</li>
+        </ul>
+    </li>
+    <li>
+        gr-iridium
+        <ul>
+            <li>Piping</li>
+            <li>Packet types</li>
+        </ul>
+    </li>
+
+</ul>
+<hr />
 <h3>To do:</h3>
 <ul>
-    <li>Sats
+    <li>
+        Sats
         <ul>
             <li>Load button from github for the current sats name and more info about them</li>
             <li>Inline editing</li>
         </ul>
     </li>
-    <li>Stats
+    <li>
+        Stats
         <ul>
             <li>Add histograms, quality based</li>
         </ul>
     </li>
-    <li>Live
+    <li>
+        Live
         <ul>
             <li>Fix and enable sat corridors</li>
             <li>Replace sat with its name</li>
@@ -43,7 +92,7 @@
             currentAssembly = Assembly.GetCallingAssembly();
         }
         System.Version versionNumber = currentAssembly.GetName().Version;
-        return string.Format("Version {0}.{1}-prerelease-{2}", versionNumber.Major, versionNumber.Minor, versionNumber.Revision);
+        return string.Format("Version {0}.{1}-{2}", versionNumber.Major, versionNumber.Minor, versionNumber.Revision);
     }
 }
 
