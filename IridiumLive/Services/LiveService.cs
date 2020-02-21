@@ -68,10 +68,10 @@ namespace IridiumLive.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine($"GetLastUtcTicks failed: {ex.Message}");
             }
             sw.Stop();
-            Console.WriteLine("GetLastUtcTicks in: {0} ms.", sw.ElapsedMilliseconds);
+            Console.WriteLine($"GetLastUtcTicks in: {sw.ElapsedMilliseconds} ms.");
             return result;
         }
 

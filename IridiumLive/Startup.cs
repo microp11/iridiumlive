@@ -90,7 +90,7 @@ namespace IridiumLive
             try
             {
                 var context = scope.ServiceProvider.GetService<IridiumLiveDbContext>();
-                //context.Database.EnsureDeleted();
+                context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
                 //this should be called in a different spot

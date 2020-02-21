@@ -68,7 +68,7 @@ namespace IridiumLive.Services
                 where UtcTicks > {utcTicks}
                 group by PacketId";
             sw.Stop();
-            Console.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
+            Debug.WriteLine("Live result in: {0} ms.", sw.ElapsedMilliseconds);
             var l = await _context.PacketCounters.FromSqlInterpolated(sqlString).AsNoTracking().ToListAsync();
             return l;
         }
