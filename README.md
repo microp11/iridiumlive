@@ -33,7 +33,7 @@ def sendOverUdp(line):
 4. Change the center frequency of the gr-iridium decoder to include the Ring Alert band as described at min 9 in the  Stefan “Sec” Zehl, schneider during their presentation at [The Eleventh HOPE (2016): Iridium Satellite Hacking](https://www.youtube.com/watch?time_continue=562&v=JhJT7Cvh6NE&feature=emb_logo).
 5. Instantiate the iridium receiver and pipe through decoder, filter and udp transmitter adapting the following command line:
 ```
-user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/hackrf.conf | ~/iridium-toolkit/iridium-parser.py -p /dev/stdin /dev/stdout | grep "sat:" | python udp-for-il.py
+user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/hackrf.conf | ~/iridium-toolkit/iridium-parser.py -p /dev/stdin /dev/stdout | python udp-for-il.py
 ```
 6. Only continue to next step if you see udp lines being transmitted:
 ```python
