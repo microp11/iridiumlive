@@ -7,6 +7,10 @@
 <h2>Satellites</h2>
 <span class="size-label">Last page update: @latestUpdate</span>
 
+<div class="live-layout-buttons">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Click="@UpdateSatDetails" Icon="cloud_download" Text="Update details" Disabled="@btnDisabled"></RadzenButton>
+</div>
+
 @if (sats == null)
 {
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" class="il-progressbar-2" />
@@ -47,6 +51,7 @@ else
     private bool timerHasBeenDisposed = false;
     Stopwatch sw;
     string uniquePageId;
+    private bool btnDisabled = false;
 
 
     protected override void OnInitialized()
@@ -113,6 +118,27 @@ else
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task UpdateSatDetails()
+    {
+        try
+        {
+            btnDisabled = true;
+            StateHasChanged();
+
+            sats = await satsService.GetImportedSatsAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+        finally
+        {
+            btnDisabled = false;
+            StateHasChanged();
         }
     }
 }  

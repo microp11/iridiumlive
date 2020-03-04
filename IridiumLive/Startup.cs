@@ -63,6 +63,15 @@ namespace IridiumLive
             services.AddScoped<ILiveService, LiveService>();
             services.AddScoped<IPlaybackService, PlaybackService>();
             services.AddScoped<IPacketCounterService, PacketCounterService>();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("https://raw.githubusercontent.com");
+                    });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

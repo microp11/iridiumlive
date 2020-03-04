@@ -20,14 +20,14 @@
  */
 
 using IridiumLive.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Globalization;
 
 namespace IridiumLive.Services
 {
@@ -42,6 +42,8 @@ namespace IridiumLive.Services
         public Task<bool> PutSatAsync(string id, Sat sat);
 
         public Task<bool> AddRxLineAsync(string rxLine);
+
+        public Task<ICollection<Sat>> GetImportedSatsAsync();
     }
 
     public class SatsService : IridiumService, ISatsService
@@ -53,7 +55,14 @@ namespace IridiumLive.Services
 
         public async Task<ICollection<Sat>> GetSatsAsync()
         {
-            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options); 
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
+            //var x = await _context.Sats.OrderBy(s => s.SatNo).AsNoTracking().ToListAsync();
+            //var options = new JsonSerializerOptions
+            //{
+            //    WriteIndented = true,
+            //};
+            //var jsonString = JsonSerializer.Serialize(x, options);
+
             return await _context.Sats.OrderBy(s => s.SatNo).AsNoTracking().ToListAsync();
         }
 
@@ -267,6 +276,12 @@ namespace IridiumLive.Services
         {
             using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options); 
             return _context.Sats.Any(e => e.SatNo == rxId);
+        }
+
+        public async Task<ICollection<Sat>> GetImportedSatsAsync()
+        {
+            string url = $"https://raw.githubusercontent.com/microp11/iridiumlive/with_imported_sats/IridiumLive/Importable/satellites.json";
+            return await new CustomHttpClient().GetJsonAsync<ICollection<Sat>>(url);
         }
     }
 }
