@@ -1,0 +1,37 @@
+{
+  "satellites": [
+    {
+      "satid": 1,
+      "satno": "1",
+      "model": "NEXT-1",
+      "orbitalplane": "1",
+      "planeslot": "1",
+      "catalogno": "1",
+      "notes": "",
+      "author": "",
+      "lastupdate": "2020-01-01"
+    },
+    {
+      "satid": 2,
+      "satno": "1",
+      "model": "NEXT-1",
+      "orbitalplane": "1",
+      "planeslot": "1",
+      "catalogno": "1",
+      "notes": "",
+      "author": "",
+      "lastupdate": "2020-01-01"
+    },
+    {
+      "satid": 3,
+      "satno": "1",
+      "model": "NEXT-1",
+      "orbitalplane": "1",
+      "planeslot": "1",
+      "catalogno": "1",
+      "notes": "",
+      "author": "",
+      "lastupdate": "2020-01-01"
+    }
+  ]
+}
