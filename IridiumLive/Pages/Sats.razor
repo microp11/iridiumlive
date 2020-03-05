@@ -42,7 +42,7 @@ else
 }
 
 @code {
-    private ICollection<Sat> sats;
+    private ICollection<Sat> sats, importedSats;
     private string latestUpdate;
     private int satCount = 0;
 
@@ -128,7 +128,12 @@ else
             btnDisabled = true;
             StateHasChanged();
 
-            sats = await satsService.GetImportedSatsAsync();
+            importedSats = await satsService.GetImportedSatsAsync();
+
+            foreach (var sat in importedSats)
+            {
+                await UpdateSatByNo(sat.SatNo, sat);
+            }
 
         }
         catch (Exception ex)
@@ -139,6 +144,18 @@ else
         {
             btnDisabled = false;
             StateHasChanged();
+        }
+    }
+
+    protected async Task UpdateSatByNo(int satNo, Sat sat)
+    {
+        try
+        {
+            await satsService.PutSatByNoAsync(satNo, sat);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
         }
     }
 }  

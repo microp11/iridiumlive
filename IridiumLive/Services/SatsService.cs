@@ -41,6 +41,8 @@ namespace IridiumLive.Services
 
         public Task<bool> PutSatAsync(string id, Sat sat);
 
+        public Task<bool> PutSatByNoAsync(int satNo, Sat sat);
+
         public Task<bool> AddRxLineAsync(string rxLine);
 
         public Task<ICollection<Sat>> GetImportedSatsAsync();
@@ -113,6 +115,35 @@ namespace IridiumLive.Services
             catch (DbUpdateConcurrencyException)
             {
                 if (!SatExists(id))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> PutSatByNoAsync(int  satNo, Sat sat)
+        {
+            if (satNo != sat.SatNo)
+            {
+                return false;
+            }
+
+            using IridiumLiveDbContext _context = new IridiumLiveDbContext(Options);
+            _context.Entry(sat).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SatExists(satNo))
                 {
                     return false;
                 }
