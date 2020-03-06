@@ -686,14 +686,14 @@
   {
     "Id": "905e752f-9ba3-4f03-8719-a62379591f69",
     "SatNo": 103,
-    "Name": "103",
-    "Model": null,
-    "OrbitalPlane": 0,
+    "Name": "109",
+    "Model": "Next",
+    "OrbitalPlane": 6,
     "PlaneSlot": 0,
     "CatalogNumber": null,
-    "Notes": null,
+    "Notes": "Operational, Vandenberg, Falcon 9 FT",
     "Author": null,
-    "LastUpdate": "0001-01-01T00:00:00"
+    "LastUpdate": "2017-01-14T00:00:00"
   },
   {
     "Id": "5ffd4bf7-9b10-46ee-9e8d-187deae5dfab",
