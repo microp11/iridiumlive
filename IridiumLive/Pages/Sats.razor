@@ -128,11 +128,24 @@ else
             btnDisabled = true;
             StateHasChanged();
 
+            sats = await satsService.GetSatsAsync();
             importedSats = await satsService.GetImportedSatsAsync();
 
-            foreach (var sat in importedSats)
+            foreach (var sat in sats)
             {
-                await UpdateSatByNo(sat.SatNo, sat);
+                foreach (var importedSat in importedSats)
+                {
+                    if (sat.SatNo == importedSat.SatNo)
+                    {
+                        sat.LastUpdate = DateTime.UtcNow;
+                        sat.Model = importedSat.Model;
+                        sat.Name = importedSat.Name;
+                        sat.Notes = importedSat.Notes;
+                        sat.OrbitalPlane = importedSat.OrbitalPlane;
+                        sat.PlaneSlot = importedSat.PlaneSlot;
+                        await UpdateSatByNo(sat.SatNo, sat);
+                    }
+                }
             }
 
         }
