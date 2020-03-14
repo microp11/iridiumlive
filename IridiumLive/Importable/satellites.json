@@ -648,22 +648,22 @@
     "LastUpdate": "0001-01-01T00:00:00"
   },
   {
-    "Id": "c8c28dbd-fbe5-49a6-ae13-991043469c49",
+    "Id": "94",
     "SatNo": 94,
-    "Name": "94",
-    "Model": null,
-    "OrbitalPlane": 0,
+    "Name": "154",
+    "Model": "Next",
+    "OrbitalPlane": 5,
     "PlaneSlot": 0,
     "CatalogNumber": null,
-    "Notes": null,
+    "Notes": "Vandenberg, Falcon 9 B5",
     "Author": null,
-    "LastUpdate": "0001-01-01T00:00:00"
+    "LastUpdate": "2018-07-25T00:00:00"
   },
   {
     "Id": "96",
     "SatNo": 96,
     "Name": "166",
-    "Model": "Next",
+    "Model": "7 Next",
     "OrbitalPlane": 5,
     "PlaneSlot": 0,
     "CatalogNumber": null,
