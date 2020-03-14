@@ -192,7 +192,7 @@
     "LastUpdate": "0001-01-01T00:00:00"
   },
   {
-    "Id": "6eacef33-a2dc-4ec2-9b6d-3d39fcdef0f5",
+    "Id": "26",
     "SatNo": 26,
     "Name": "103",
     "Model": "Next",
@@ -660,16 +660,16 @@
     "LastUpdate": "0001-01-01T00:00:00"
   },
   {
-    "Id": "ec3cd539-e85e-46e8-8743-e9f4b9859552",
+    "Id": "96",
     "SatNo": 96,
-    "Name": "96",
-    "Model": null,
-    "OrbitalPlane": 0,
+    "Name": "166",
+    "Model": "Next",
+    "OrbitalPlane": 5,
     "PlaneSlot": 0,
     "CatalogNumber": null,
-    "Notes": null,
+    "Notes": "Falcon 9 B5",
     "Author": null,
-    "LastUpdate": "0001-01-01T00:00:00"
+    "LastUpdate": "2018-07-25T00:00:00"
   },
   {
     "Id": "52cb8ba1-2248-4cf7-8e5f-a08620cbc415",
@@ -684,7 +684,7 @@
     "LastUpdate": "0001-01-01T00:00:00"
   },
   {
-    "Id": "905e752f-9ba3-4f03-8719-a62379591f69",
+    "Id": "103",
     "SatNo": 103,
     "Name": "109",
     "Model": "Next",
