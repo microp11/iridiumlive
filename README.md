@@ -17,6 +17,19 @@ At this time the following ports have been hard coded:
  7777: IridiumLive server port,
 15007: udp port for receiving data from gr-iridium and iridium-toolkit.
 ```
+If the ports cannot be bound to, use:
+```
+lsof -i :7777
+lsof -i :15007
+```
+to find out what's attached to these port(s).
+
+You could use:
+```
+lsof -ti :7777 | xargs --no-run-if-empty kill -9
+```
+to forcefully clear out the port as part of your pre-start routine.
+
 The data will be provided by your personal install of gr-iridium and iridium-toolkit (see [gr-iridium](https://github.com/muccc/gr-iridium) and [iridium-toolkit](https://github.com/muccc/iridium-toolkit)). See bottom of page for quick instructions.
 1. On the same machine as gr-iridium download and extract the python udp transmitter [udp-for-il.py](udp-for-il.py). Please install in the same folder as gr-iridium.
 2. Depending of your intended OS target, download and extract the appropriate IridiumLive archive. There is no installation needed, simply extract in a folder of its own. You can extract either on the same machine or to a different one.
