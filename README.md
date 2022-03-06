@@ -1,13 +1,5 @@
 # IridiumLive
 
-> #### Note
-> 
-> Up until recently, March 2022, there was no work being done to this application. The dependencies: gr-iridium, iridium-toolkit, gnuradio and python itself have all been updated and upgraded many times over. As a result of these subsequent updates to dependencies, the iridiumlive stopped working. It still works (tested!!!) with gnuradio 3.7, gr-iridium and iridium-toolkit based on that version of gnuradio and python 2.x
->
-> Currently there is an update of work in progress (see issues) and iridiumlive will be realigned with a more recent version of the dependencies. Also the installation instructions for these dependencies will be provided below.
->
-> This note will be removed after re-alignment.
-
 *Welcome to IridiumLive!*
 
 IridiumLive is a [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.1) server application which allows for the real-time vizualization of the iridium satellites as they pass above your location. 
@@ -71,7 +63,7 @@ user@computer:~/gr-iridium$ iridium-extractor --offline --multi-frame examples/h
 
 #### Disclaimer
 
-This is my first .NET Core web app. Blazor on top of it. Be merciless and gentle!
+This was my first .NET Core web app. Blazor on top of it. Be merciless and gentle!
 
 <p align="center">
   <img alt="Screenshot" style="max-width:100%;" src="prerelease1.jpg">
@@ -79,33 +71,12 @@ This is my first .NET Core web app. Blazor on top of it. Be merciless and gentle
 
 #### Quick install on gr-iridium and iridium-toolkit for Rapberry Pi
 
-The following has been tested on RPi 3b running Raspbian Buster Lite Minimal image based on Debian Buster.
+The following has been tested on RPi 400 with https://sourceforge.net/projects/dragonos-pi64/
+Currently DragonOs contains gnuradio 3.8+
+As such use the following to have your gr-iridium aligned with these versions.
 
 ```
-sudo apt update
-sudo apt upgrade -y
-
-sudo apt install python-pip python-dev build-essential
-sudo -H pip install --upgrade pip
-sudo -H pip install --upgrade virtualenv
-sudo -H pip install --upgrade setuptools
-
-sudo apt install libboost-all-dev
-
-sudo -H pip install pyBOMBS
-
-sudo apt install pypy
-
-sudo apt install gnuradio gr-osmosdr
-
-sudo apt install hackrf
-
-sudo apt-get install git
-sudo apt-get install cmake
-sudo apt-get install swig
-sudo apt-get install doxygen
-
-git clone https://github.com/muccc/gr-iridium.git
+git clone -b maint-3.8 https://github.com/muccc/gr-iridium.git
 cd gr-iridium
 mkdir build
 cd build
@@ -115,4 +86,5 @@ sudo make install
 sudo ldconfig
 
 git clone https://github.com/muccc/iridium-toolkit.git
+git checkout -b local-branch-from-commit e173069f43189ee7dfca2875f56ac284e74b17e4
 ```
