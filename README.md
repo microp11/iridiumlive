@@ -1,5 +1,13 @@
 # IridiumLive
 
+> #### Note
+> 
+> Up until recently, March 2022, there was no work being done to this application. The dependencies: gr-iridium, iridium-toolkit, gnuradio and python itself have all been updated and upgraded many times over. As a result of these subsequent updates to dependencies, the iridiumlive stopped working. It still works (tested!!!) with gnuradio 3.7, gr-iridium and iridium-toolkit based on that version of gnuradio and python 2.x
+>
+> Currently there is an update of work in progress (see issues) and iridiumlive will be realigned with a more recent version of the dependencies. Also the installation instructions for these dependencies will be provided below.
+>
+> This note will be removed after re-alignment.
+
 *Welcome to IridiumLive!*
 
 IridiumLive is a [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.1) server application which allows for the real-time vizualization of the iridium satellites as they pass above your location. 
