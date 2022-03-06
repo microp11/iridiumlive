@@ -12,6 +12,14 @@ You install the application in your local network, and use the browser to intera
 
 Binaries: [https://github.com/microp11/iridiumlive/releases](https://github.com/microp11/iridiumlive/releases)
 
+To build/run from source you need dotnet version 3.1.* installed, then run:
+```
+git clone https://github.com/microp11/iridiumlive
+cd iridiumlive
+cd IridiumLive
+dotnet run
+```
+
 At this time the following ports have been hard coded:
 ```
  7777: IridiumLive server port,
