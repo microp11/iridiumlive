@@ -73,7 +73,7 @@ This was my first .NET Core web app. Blazor on top of it. Be merciless and gentl
 
 The following has been tested on RPi 400 with https://sourceforge.net/projects/dragonos-pi64/  
 Currently DragonOs contains gnuradio 3.8+  
-As such use the following to have your gr-iridium aligned with these versions.  
+Use the following to have your gr-iridium aligned with these versions:  
 
 ```
 git clone -b maint-3.8 https://github.com/muccc/gr-iridium.git
