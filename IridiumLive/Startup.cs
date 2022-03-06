@@ -30,6 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace IridiumLive
@@ -121,6 +122,7 @@ namespace IridiumLive
             {
                 return;
             }
+            //Debug.WriteLine(rxLine);
             await satsService.AddRxLineAsync(rxLine);
         }
     }

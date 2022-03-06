@@ -64,7 +64,7 @@ namespace IridiumLive.Services
             try
             {
                 var a = await _context.Packets.OrderByDescending(x => x.UtcTicks).FirstOrDefaultAsync();
-                result = a.UtcTicks;
+                if (a != null) result = a.UtcTicks;
             }
             catch (Exception ex)
             {
